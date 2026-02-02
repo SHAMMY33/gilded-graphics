@@ -23,6 +23,16 @@
     </nav>
   </header>
 
+    <section class="shop-bar">
+      <div></div>
+
+     <button class="smallbtn" id="openCartBtn" type="button">
+        Cart <span id="cartCount" class="badge">0</span>
+     </button>
+    </section>
+
+     <section class="products" id="productGrid"></section>
+
   <main class="wrap">
     <section class="pagehead">
       <h1>Products</h1>
@@ -165,5 +175,68 @@
   });
 </script>
 
+<script src="assets/cart.js?v=1"></script>
+
+<script>
+  // Add products here. Copy/paste an object to add more.
+  const PRODUCTS = [
+    {
+      sku: "red_sea_surf_classic",
+      name: "Red Sea Surf Classic",
+      desc: "DTF tee print • bold + clean • fast turnaround",
+      image: "assets/images/red-sea-surf-classic.jpg",
+      tag: "New"
+    }
+  ];
+
+  const grid = document.getElementById("productGrid");
+
+  grid.innerHTML = PRODUCTS.map(p => `
+    <article class="p-card">
+      <div class="p-img">
+        ${p.image ? `<img src="${p.image}" alt="${p.name}">` : ``}
+      </div>
+
+      <div class="p-body">
+        <div class="p-top">
+          <h3>${p.name}</h3>
+          ${p.tag ? `<span class="tag">${p.tag}</span>` : ``}
+        </div>
+
+        <p>${p.desc}</p>
+
+        <div class="p-actions">
+          <button class="smallbtn" type="button" data-add data-sku="${p.sku}">
+            Add to cart
+          </button>
+          <a class="smallbtn" href="order.html">Get a quote</a>
+        </div>
+      </div>
+    </article>
+  `).join("");
+
+  // Handle Add to cart clicks
+  grid.addEventListener("click", (e) => {
+    const btn = e.target.closest("[data-add]");
+    if (!btn) return;
+
+    const sku = btn.getAttribute("data-sku");
+    window.Cart.add(sku, 1);
+    window.Cart.syncBadge("cartCount");
+  });
+
+  // Initialize badge
+  window.Cart.syncBadge("cartCount");
+
+  // Temporary cart button behavior
+  document.getElementById("openCartBtn").addEventListener("click", () => {
+    const items = window.Cart.read();
+    alert(items.length ? JSON.stringify(items, null, 2) : "Cart is empty.");
+  });
+</script>
+
+
 </body>
+
+
 </html>
