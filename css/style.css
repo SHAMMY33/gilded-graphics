@@ -129,6 +129,7 @@ a:link, a:visited, a:hover, a:active{ color: inherit; }
   border:1px solid var(--line);
   background:#fff;
   font-weight:800;
+  align-item:center;
 }
 button.smallbtn{cursor:pointer}
 
@@ -226,6 +227,51 @@ button.smallbtn{cursor:pointer}
   padding:8px 10px;
   font-size:13px;
 }
+
+/* ===== Add-ons for product grid actions + cart badge (safe) ===== */
+
+.badge{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  min-width:20px;
+  height:20px;
+  padding:0 6px;
+  margin-left:6px;
+  border:1px solid rgba(0,0,0,.12);
+  background:#111;
+  color:#fff;
+  font-size:12px;
+  font-weight:800;
+  line-height:1;
+}
+
+.p-top{
+  display:flex;
+  justify-content:space-between;
+  gap:10px;
+  align-items:flex-start;
+}
+
+.tag{
+  display:inline-flex;
+  padding:5px 8px;
+  border:1px solid var(--line);
+  background:#fff;
+  font-size:11px;
+  font-weight:900;
+  letter-spacing:.06em;
+  text-transform:uppercase;
+  color:#111;
+}
+
+.p-actions{
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+  margin-top:12px;
+}
+
 
 /* Cart (minimal) */
 .cart{
