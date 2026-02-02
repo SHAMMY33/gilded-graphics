@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Start an Order • Gilded Graphics</title>
+  <meta name="description" content="Order apparel printing or design work." />
+  <link rel="stylesheet" href="css/style.css?v=3" />
+</head>
+<body>
+  <div class="bar">
+    <span>DTF PRINT • DESIGN • FAST TURNAROUNDS</span>
+    <span class="dot">•</span>
+    <span>FREE LOCAL SHIPPING</span>
+  </div>
+
+  <header class="nav">
+    <a class="brand" href="index.html">GILDED</a>
+    <nav class="links">
+      <a href="shop.html">Shop</a>
+      <a href="work.html">Work</a>
+      <a class="btn" href="order.html">Start an Order</a>
+    </nav>
+  </header>
+
+  <main class="wrap">
+    <section class="pagehead">
+      <h1>Start an order</h1>
+      <p class="muted">Tell us what you want. We’ll reply with timeline + quote.</p>
+    </section>
+
+    <form class="form"
+      action="https://formsubmit.co/gildedgraphicz@gmail.com"
+      method="POST"
+      enctype="multipart/form-data">
+
+      <input type="hidden" name="_subject" value="New Gilded Graphics Order Request" />
+      <input type="hidden" name="_template" value="table" />
+      <input type="hidden" name="_captcha" value="false" />
+      <!-- We'll update this _next URL after GitHub Pages is live -->
+      <input type="hidden" name="_next" value="https://shammy33.github.io/gilded-graphics/thanks.html" />
+
+      <div class="row">
+        <label>Full name</label>
+        <input name="name" required placeholder="First Last" />
+      </div>
+
+      <div class="row">
+        <label>Email</label>
+        <input type="email" name="email" required placeholder="you@email.com" />
+      </div>
+
+     <div class="row">
+       <label>What do you want?</label>
+         <select name="product[]" multiple required>
+           <option>DTF Tee Print</option>
+           <option>DTF Hoodie Print</option>
+           <option>Sticker Pack</option>
+           <option>Logo / Brand Graphic</option>
+           <option>Flyer / Poster</option>
+           <option>Social Pack</option>
+           <option>Not sure / tell me what’s best</option>
+         </select>
+         <p class="muted tiny">Tip: Hold Ctrl (Windows/Linux) or Cmd (Mac) to select multiple.</p>
+     </div>
+      
+
+      <div class="row">
+        <label>Details (qty, sizes, colors, vibe)</label>
+        <textarea name="details" required rows="6" placeholder="Example: 25 black tees, front + back print, bold grunge vibe, need by next Friday."></textarea>
+      </div>
+
+      <div class="row">
+        <label>Deadline</label>
+        <input name="deadline" placeholder="e.g., Feb 10" />
+      </div>
+
+      <div class="row">
+        <label>Phone (optional)</label>
+        <input name="phone" placeholder="(702)..." />
+      </div>
+
+      <button class="btn full" type="submit">Send request</button>
+
+      <p class="muted tiny">
+        By sending, you agree we can contact you about this request.
+      </p>
+    </form>
+
+    <footer class="footer">
+      <div class="footer-row">
+        <a class="muted" href="shop.html">Shop</a>
+        <a class="muted" href="mailto:gildedgraphicz@gmail.com">Email</a>
+      </div>
+    </footer>
+  </main>
+</body>
+</html>
