@@ -125,7 +125,7 @@ a:link, a:visited, a:hover, a:active{ color: inherit; }
   border:1px solid var(--line);
   background:#fff;
   font-weight:800;
-  align-items:center; /* FIXED */
+  align-items:center;
 }
 button.smallbtn{cursor:pointer}
 
@@ -395,17 +395,20 @@ button.smallbtn{cursor:pointer}
 .p-img{
   aspect-ratio:3 / 4;
   background:#f1f1f3;
+  position:relative; /* anchor for bag button */
 }
 
-/* Product image area becomes the anchor for the bag button */
-.p-img{
-  position:relative; /* important */
+.p-img img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  display:block;
 }
 
-/* Bag Add-to-Cart button */
-.addbag{
+/* Bag Add-to-Cart button (bottom-right) */
+.add-bag{
   position:absolute;
-  left:12px;
+  right:12px;
   bottom:12px;
   width:44px;
   height:44px;
@@ -415,11 +418,12 @@ button.smallbtn{cursor:pointer}
   align-items:center;
   justify-content:center;
   cursor:pointer;
+  box-shadow: 0 6px 18px rgba(0,0,0,.10);
 }
 
-.addbag:hover{filter:brightness(.98)}
-.addbag:active{transform:translateY(1px)}
-.addbag img{width:20px;height:20px;display:block}
+.add-bag:hover{filter:brightness(.98)}
+.add-bag:active{transform:translateY(1px)}
+.add-bag img{width:20px;height:20px;display:block}
 
 /* Price line under title */
 .price{
@@ -427,14 +431,6 @@ button.smallbtn{cursor:pointer}
   font-size:13px;
   font-weight:900;
   letter-spacing:.02em;
-}
-
-
-.p-img img{
-  width:100%;
-  height:100%;
-  object-fit:cover;
-  display:block;
 }
 
 .p-body{ padding:14px; }
