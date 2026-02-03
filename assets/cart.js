@@ -14,17 +14,23 @@
     localStorage.setItem(KEY, JSON.stringify(items));
   }
 
+  function normQty(qty) {
+    const n = Number(qty);
+    if (!Number.isFinite(n)) return 0;
+    return Math.floor(n);
+  }
+
   function add(sku, qty = 1) {
     if (!sku) return;
+
+    const addQty = normQty(qty);
+    if (addQty <= 0) return;
 
     const items = read();
     const found = items.find(i => i.sku === sku);
 
-    if (found) {
-      found.qty += qty;
-    } else {
-      items.push({ sku, qty });
-    }
+    if (found) found.qty = normQty(found.qty) + addQty;
+    else items.push({ sku, qty: addQty });
 
     write(items);
   }
@@ -38,10 +44,12 @@
     const item = items.find(i => i.sku === sku);
     if (!item) return;
 
-    if (qty <= 0) remove(sku);
-    else item.qty = qty;
-
-    write(items);
+    const n = normQty(qty);
+    if (n <= 0) remove(sku);
+    else {
+      item.qty = n;
+      write(items);
+    }
   }
 
   function clear() {
@@ -49,22 +57,13 @@
   }
 
   function count() {
-    return read().reduce((sum, i) => sum + i.qty, 0);
+    return read().reduce((sum, i) => sum + (normQty(i.qty) || 0), 0);
   }
 
   function syncBadge(id = "cartCount") {
     const el = document.getElementById(id);
-    if (el) el.textContent = count();
+    if (el) el.textContent = String(count());
   }
 
-  // ✅ Expose globally
-  window.Cart = {
-    read,
-    add,
-    remove,
-    setQty,
-    clear,
-    count,
-    syncBadge
-  };
+  window.Cart = { read, add, remove, setQty, clear, count, syncBadge };
 })();
