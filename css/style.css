@@ -403,7 +403,7 @@ button.smallbtn{cursor:pointer}
 }
 
 /* Bag Add-to-Cart button */
-.addbag{
+.add-bag{
   position:absolute;
   left:12px;
   bottom:12px;
@@ -417,9 +417,9 @@ button.smallbtn{cursor:pointer}
   cursor:pointer;
 }
 
-.addbag:hover{filter:brightness(.98)}
-.addbag:active{transform:translateY(1px)}
-.addbag img{width:20px;height:20px;display:block}
+.add-bag:hover{filter:brightness(.98)}
+.add-bag:active{transform:translateY(1px)}
+.add-bag img{width:20px;height:20px;display:block}
 
 /* Price line under title */
 .price{
