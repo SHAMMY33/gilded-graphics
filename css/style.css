@@ -395,18 +395,18 @@ button.smallbtn{cursor:pointer}
 .p-img{
   aspect-ratio:3 / 4;
   background:#f1f1f3;
+
+  /* anchor for bag button */
+  position:relative;
 }
 
-/* Product image area becomes the anchor for the bag button */
-.p-img{
-  position:relative; /* important */
-}
-
-/* Bag Add-to-Cart button */
+/* Bag Add-to-Cart button (BOTTOM-RIGHT) */
 .add-bag{
   position:absolute;
-  left:12px;
+  right:12px;
   bottom:12px;
+  left:auto;
+
   width:44px;
   height:44px;
   border:1px solid var(--line);
@@ -415,6 +415,8 @@ button.smallbtn{cursor:pointer}
   align-items:center;
   justify-content:center;
   cursor:pointer;
+
+  box-shadow: 0 6px 18px rgba(0,0,0,.08);
 }
 
 .add-bag:hover{filter:brightness(.98)}
@@ -428,7 +430,6 @@ button.smallbtn{cursor:pointer}
   font-weight:900;
   letter-spacing:.02em;
 }
-
 
 .p-img img{
   width:100%;
