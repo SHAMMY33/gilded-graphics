@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Shop • Gilded Graphics</title>
   <meta name="description" content="Product list for apparel and design services." />
-  <link rel="stylesheet" href="css/style.css?v=4" />
+  <link rel="stylesheet" href="css/style.css?v=3" />
 </head>
 
 <body>
@@ -42,7 +42,34 @@
       </div>
     </section>
 
+    <!-- Products render here -->
     <section class="products" id="productGrid"></section>
+
+    <!-- Backdrop -->
+    <div class="cart-backdrop" id="cartBackdrop" hidden></div>
+
+    <!-- Cart Drawer -->
+    <aside class="cart" id="cartDrawer" hidden>
+      <div class="cart-top">
+        <h2>Your Cart</h2>
+        <button class="smallbtn" id="closeCartBtn" type="button">Close</button>
+      </div>
+
+      <div class="cart-items" id="cartItems"></div>
+
+      <div class="cart-actions">
+        <button class="btn full" id="checkoutBtn" type="button">
+          Checkout
+        </button>
+        <button class="smallbtn" id="clearCartBtn" type="button">
+          Clear cart
+        </button>
+      </div>
+
+      <p class="notice">
+        Checkout opens Stripe. Cart items are sent as a bundle.
+      </p>
+    </aside>
 
     <footer class="footer">
       <div class="footer-row">
@@ -53,35 +80,11 @@
     </footer>
   </main>
 
-  <!-- Backdrop (click to close) -->
-  <div class="cart-backdrop" id="cartBackdrop" hidden></div>
-
-  <!-- Cart Drawer -->
-  <aside class="cart" id="cartDrawer" hidden aria-hidden="true">
-    <div class="cart-top">
-      <h2>Your Cart</h2>
-      <button class="smallbtn" id="closeCartBtn" type="button">Close</button>
-    </div>
-
-    <div class="cart-items" id="cartItems"></div>
-
-    <div class="cart-actions">
-      <button class="btn full" id="checkoutBtn" type="button">
-        Checkout
-      </button>
-      <button class="smallbtn" id="clearCartBtn" type="button">
-        Clear cart
-      </button>
-    </div>
-
-    <p class="notice">
-      Final pricing + confirmation will happen at checkout.
-    </p>
-  </aside>
-
-  <script src="assets/cart.js?v=4"></script>
+  <!-- IMPORTANT: cart.js must be plain script (no exports) -->
+  <script src="assets/cart.js?v=3"></script>
 
   <script>
+    // ---------- tiny toast ----------
     function toast(msg) {
       const t = document.createElement("div");
       t.textContent = msg;
@@ -97,86 +100,72 @@
       setTimeout(() => t.remove(), 1400);
     }
 
-<script>
-  // Add products here (copy/paste an object)
-  const PRODUCTS = [
-    {
-      sku: "red_sea_surf_classic",
-      name: "Red Sea Surf Classic",
-      desc: "DTF tee print • bold + clean • fast turnaround",
-      image: "assets/images/red-sea-surf-classic.jpg",
-      tag: "Best Seller"
-    },
-    {
-      sku: "dtf_hoodie_print",
-      name: "DTF Hoodie Print",
-      desc: "Front or back prints • heavyweight hoodies • high durability",
-      image: "assets/images/dtf-hoodie-print.jpg",
-      tag: "Popular"
-    }
-  ];
-  
+    // ---------- products (add more by copying an object) ----------
+    const PRODUCTS = [
+      {
+        sku: "red_sea_surf_classic",
+        name: "Red Sea Surf Classic",
+        desc: "DTF tee print • bold + clean • fast turnaround",
+        image: "assets/images/red-sea-surf-classic.jpg",
+        tag: "Best Seller"
+      },
+      {
+        sku: "dtf_hoodie_print",
+        name: "DTF Hoodie Print",
+        desc: "Front/back options • heavyweight • durable prints",
+        image: "assets/images/dtf-hoodie-print.jpg",
+        tag: "Popular"
+      }
+    ];
 
-    // Render product grid
-    const grid = document.getElementById("productGrid");
-    grid.innerHTML = PRODUCTS.map(p => `
-      <article class="p-card">
-        <div class="p-img">
-          ${p.image ? `<img src="${p.image}" alt="${p.name}" onerror="this.remove()">` : ``}
-        </div>
+    // ---------- helpers ----------
+    function byId(id){ return document.getElementById(id); }
 
-        <div class="p-body">
-          <div class="p-top" style="display:flex; justify-content:space-between; align-items:center; gap:10px;">
-            <h3 style="margin:0;">${p.name}</h3>
-            ${p.tag ? `<span class="tag" style="border:1px solid rgba(0,0,0,.12); padding:6px 10px; font-size:12px; font-weight:800;">${p.tag}</span>` : ``}
-          </div>
-
-          <p style="margin-top:8px;">${p.desc}</p>
-
-          <div class="p-actions" style="display:flex; gap:10px; margin-top:12px; flex-wrap:wrap;">
-            <button class="smallbtn" type="button" data-add="1" data-sku="${p.sku}">
-              Add to cart
-            </button>
-            <a class="smallbtn" href="order.html">Get a quote</a>
-          </div>
-        </div>
-      </article>
-    `).join("");
-
-    // Badge update
     function syncBadge() {
-      const badge = document.getElementById("cartCount");
+      const badge = byId("cartCount");
       if (!badge) return;
-
       if (window.Cart && typeof window.Cart.count === "function") {
         badge.textContent = String(window.Cart.count());
-        return;
-      }
-
-      try {
-        const raw = localStorage.getItem("gilded_cart_v1");
-        const items = raw ? JSON.parse(raw) : [];
-        const total = Array.isArray(items)
-          ? items.reduce((s, i) => s + (Number(i.qty) || 0), 0)
-          : 0;
-        badge.textContent = String(total);
-      } catch {
+      } else {
         badge.textContent = "0";
       }
     }
 
-    // Wire add buttons
-    function wireAddButtons() {
-      document.querySelectorAll("[data-add][data-sku]").forEach(btn => {
-        btn.addEventListener("click", () => {
-          const sku = btn.getAttribute("data-sku");
+    function renderProducts() {
+      const grid = byId("productGrid");
+      if (!grid) return;
 
+      grid.innerHTML = PRODUCTS.map(p => `
+        <article class="p-card">
+          <div class="p-img">
+            ${p.image ? `<img src="${p.image}" alt="${p.name}" onerror="this.remove()">` : ``}
+          </div>
+
+          <div class="p-body">
+            <div class="p-top">
+              <h3 style="margin:0;">${p.name}</h3>
+              ${p.tag ? `<span class="tag">${p.tag}</span>` : ``}
+            </div>
+
+            <p style="margin-top:8px;">${p.desc}</p>
+
+            <div class="p-actions">
+              <button class="smallbtn" type="button" data-sku="${p.sku}">Add to cart</button>
+              <a class="smallbtn" href="order.html">Get a quote</a>
+            </div>
+          </div>
+        </article>
+      `).join("");
+
+      // wire add buttons
+      grid.querySelectorAll("button[data-sku]").forEach(btn => {
+        btn.addEventListener("click", () => {
           if (!window.Cart) {
-            console.error("Cart not loaded. assets/cart.js missing?");
-            toast("Cart script failed to load");
+            console.error("Cart not loaded (assets/cart.js).");
+            toast("Cart failed to load");
             return;
           }
-
+          const sku = btn.getAttribute("data-sku");
           window.Cart.add(sku, 1);
           syncBadge();
           toast("Added to cart");
@@ -184,41 +173,15 @@
       });
     }
 
-    // Drawer + Backdrop
-    const drawer = document.getElementById("cartDrawer");
-    const backdrop = document.getElementById("cartBackdrop");
-    const cartItemsEl = document.getElementById("cartItems");
-
-    function openCart() {
-      drawer.hidden = false;
-      backdrop.hidden = false;
-      drawer.setAttribute("aria-hidden", "false");
-
-      // allow CSS to animate in
-      requestAnimationFrame(() => drawer.classList.add("is-open"));
-
-      renderCart();
-    }
-
-    function closeCart() {
-      drawer.classList.remove("is-open");
-      drawer.setAttribute("aria-hidden", "true");
-
-      // wait for slide-out transition, then hide
-      setTimeout(() => {
-        drawer.hidden = true;
-        backdrop.hidden = true;
-      }, 180);
-    }
-
     function renderCart() {
-      if (!window.Cart) return;
+      const itemsEl = byId("cartItems");
+      if (!itemsEl || !window.Cart) return;
 
       const items = window.Cart.read();
-      cartItemsEl.innerHTML = "";
+      itemsEl.innerHTML = "";
 
       if (!items.length) {
-        cartItemsEl.innerHTML = "<p class='muted'>Your cart is empty.</p>";
+        itemsEl.innerHTML = "<p class='muted'>Your cart is empty.</p>";
         return;
       }
 
@@ -227,7 +190,6 @@
 
         const row = document.createElement("div");
         row.className = "cart-item";
-
         row.innerHTML = `
           <div class="cart-left">
             <span class="cart-title">${product ? product.name : item.sku}</span>
@@ -235,56 +197,84 @@
           </div>
 
           <div class="cart-right">
-            <input class="qty" type="number" min="1" value="${Number(item.qty) || 1}" />
+            <input class="qty" type="number" min="1" value="${item.qty}" />
             <button class="smallbtn" type="button" aria-label="Remove">✕</button>
           </div>
         `;
 
-        row.querySelector("input").addEventListener("change", e => {
-          const nextQty = Math.max(1, Number(e.target.value || 1));
-          window.Cart.setQty(item.sku, nextQty);
+        const qtyInput = row.querySelector("input.qty");
+        const removeBtn = row.querySelector("button");
+
+        qtyInput.addEventListener("change", () => {
+          const next = parseInt(qtyInput.value, 10);
+          window.Cart.setQty(item.sku, Number.isFinite(next) ? next : item.qty);
           syncBadge();
           renderCart();
         });
 
-        row.querySelector("button").addEventListener("click", () => {
+        removeBtn.addEventListener("click", () => {
           window.Cart.remove(item.sku);
           syncBadge();
           renderCart();
         });
 
-        cartItemsEl.appendChild(row);
+        itemsEl.appendChild(row);
       });
     }
 
-    // Open / close cart
-    document.getElementById("openCartBtn").addEventListener("click", openCart);
-    document.getElementById("closeCartBtn").addEventListener("click", closeCart);
+    // ---------- drawer controls ----------
+    const drawer = byId("cartDrawer");
+    const backdrop = byId("cartBackdrop");
 
-    // Click backdrop to close
-    backdrop.addEventListener("click", closeCart);
+    function openCart(){
+      if (!drawer || !backdrop) return;
+      drawer.hidden = false;
+      backdrop.hidden = false;
+      drawer.classList.add("is-open");
+      syncBadge();
+      renderCart();
+    }
 
-    // ESC to close
-    document.addEventListener("keydown", (e) => {
-      if (e.key === "Escape" && !drawer.hidden) closeCart();
-    });
+    function closeCart(){
+      if (!drawer || !backdrop) return;
+      drawer.classList.remove("is-open");
+      // give the animation a moment then hide
+      setTimeout(() => {
+        drawer.hidden = true;
+        backdrop.hidden = true;
+      }, 180);
+    }
 
-    // Clear cart
-    document.getElementById("clearCartBtn").addEventListener("click", () => {
-      window.Cart.clear();
+    // ---------- init ----------
+    console.log("Shop scripts loaded. Cart present:", !!window.Cart);
+
+    renderProducts();
+    syncBadge();
+
+    byId("openCartBtn")?.addEventListener("click", openCart);
+    byId("closeCartBtn")?.addEventListener("click", closeCart);
+    backdrop?.addEventListener("click", closeCart);
+
+    byId("clearCartBtn")?.addEventListener("click", () => {
+      window.Cart?.clear();
       syncBadge();
       renderCart();
     });
 
-    // Checkout (placeholder for next step)
-    document.getElementById("checkoutBtn").addEventListener("click", () => {
-      toast("Next: connect checkout to Stripe");
-    });
+    // Checkout stub (next step we connect to Vercel -> Stripe)
+    byId("checkoutBtn")?.addEventListener("click", async () => {
+      if (!window.Cart) return;
+      const items = window.Cart.read();
 
-    // Init
-    syncBadge();
-    wireAddButtons();
-    console.log("Shop scripts loaded. Cart present:", !!window.Cart);
+      if (!items.length) {
+        toast("Cart is empty");
+        return;
+      }
+
+      // NEXT STEP: replace this with a real fetch() to your Vercel /api/checkout
+      toast("Next: send cart to Stripe checkout");
+      console.log("Cart to checkout:", items);
+    });
   </script>
 </body>
 </html>
