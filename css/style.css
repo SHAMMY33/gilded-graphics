@@ -380,30 +380,6 @@ button.smallbtn{cursor:pointer}
   margin-top:10px;
 }
 
-<<<<<<< HEAD
-=======
-/* Cart drawer overlay */
-.cart {
-  position: fixed;
-  top: 0;
-  right: 0;
-  width: 360px;
-  max-width: 92vw;
-  height: 100vh;
-  background: #fff;
-  border-left: 1px solid var(--line);
-  padding: 18px;
-  z-index: 1000;
-  overflow-y: auto;
-}
-
-/* Prevent layout jump when hidden */
-.cart[hidden] {
-  display: none;
-}
-
-
->>>>>>> f051e98 (yup)
 /* Product grid (editorial flat) */
 .products{
   display:grid;
