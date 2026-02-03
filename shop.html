@@ -105,14 +105,16 @@
       {
         sku: "red_sea_surf_classic",
         name: "Red Sea Surf Classic",
-        desc: "DTF tee print • bold + clean • fast turnaround",
+        price: 35,
+	desc: "DTF tee print • bold + clean • fast turnaround",
         image: "assets/images/red-sea-surf-classic.jpg",
         tag: "Best Seller"
       },
       {
         sku: "dtf_hoodie_print",
         name: "DTF Hoodie Print",
-        desc: "Front/back options • heavyweight • durable prints",
+        price: 50,
+	desc: "Front/back options • heavyweight • durable prints",
         image: "assets/images/dtf-hoodie-print.jpg",
         tag: "Popular"
       }
@@ -135,42 +137,45 @@
       const grid = byId("productGrid");
       if (!grid) return;
 
-      grid.innerHTML = PRODUCTS.map(p => `
-        <article class="p-card">
-          <div class="p-img">
-            ${p.image ? `<img src="${p.image}" alt="${p.name}" onerror="this.remove()">` : ``}
-          </div>
+grid.innerHTML = PRODUCTS.map(p => `
+  <article class="p-card">
+    <div class="p-img">
+      ${p.image ? `<img src="${p.image}" alt="${p.name}" onerror="this.remove()">` : ``}
 
-          <div class="p-body">
-            <div class="p-top">
-              <h3 style="margin:0;">${p.name}</h3>
-              ${p.tag ? `<span class="tag">${p.tag}</span>` : ``}
-            </div>
+      <button class="addbag" type="button" data-sku="${p.sku}" aria-label="Add to cart">
+        <img src="assets/images/bag.png" alt="" aria-hidden="true">
+      </button>
+    </div>
 
-            <p style="margin-top:8px;">${p.desc}</p>
+    <div class="p-body">
+      <div class="p-top">
+        <h3 style="margin:0;">${p.name}</h3>
+        ${p.tag ? `<span class="tag">${p.tag}</span>` : ``}
+      </div>
 
-            <div class="p-actions">
-              <button class="smallbtn" type="button" data-sku="${p.sku}">Add to cart</button>
-              <a class="smallbtn" href="order.html">Get a quote</a>
-            </div>
-          </div>
-        </article>
-      `).join("");
+      <div class="price">$${Number(p.price).toFixed(2)}</div>
 
-      // wire add buttons
-      grid.querySelectorAll("button[data-sku]").forEach(btn => {
-        btn.addEventListener("click", () => {
-          if (!window.Cart) {
-            console.error("Cart not loaded (assets/cart.js).");
-            toast("Cart failed to load");
-            return;
-          }
-          const sku = btn.getAttribute("data-sku");
-          window.Cart.add(sku, 1);
-          syncBadge();
-          toast("Added to cart");
-        });
-      });
+      <p>${p.desc}</p>
+    </div>
+  </article>
+`).join("");
+
+// wire add buttons (bag)
+grid.querySelectorAll("button.addbag[data-sku]").forEach(btn => {
+  btn.addEventListener("click", () => {
+    if (!window.Cart) {
+      console.error("Cart not loaded (assets/cart.js).");
+      toast("Cart failed to load");
+      return;
+    }
+    const sku = btn.getAttribute("data-sku");
+    window.Cart.add(sku, 1);
+    syncBadge();
+    toast("Added to cart");
+  });
+});
+
+
     }
 
     function renderCart() {
