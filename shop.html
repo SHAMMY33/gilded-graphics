@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Shop • Gilded Graphics</title>
   <meta name="description" content="Product list for apparel and design services." />
-  <link rel="stylesheet" href="css/style.css?v=3" />
+  <link rel="stylesheet" href="css/style.css?v=4" />
 </head>
 
 <body>
@@ -44,29 +44,6 @@
 
     <section class="products" id="productGrid"></section>
 
-    <!-- Cart Drawer -->
-    <aside class="cart" id="cartDrawer" hidden>
-      <div class="cart-top">
-        <h2>Your Cart</h2>
-        <button class="smallbtn" id="closeCartBtn" type="button">Close</button>
-      </div>
-
-      <div class="cart-items" id="cartItems"></div>
-
-      <div class="cart-actions">
-        <button class="btn full" id="checkoutBtn" type="button">
-          Checkout
-        </button>
-        <button class="smallbtn" id="clearCartBtn" type="button">
-          Clear cart
-        </button>
-      </div>
-
-      <p class="notice">
-        Final pricing + confirmation will happen at checkout.
-      </p>
-    </aside>
-
     <footer class="footer">
       <div class="footer-row">
         <a class="muted" href="index.html">Home</a>
@@ -76,7 +53,33 @@
     </footer>
   </main>
 
-  <script src="assets/cart.js?v=3"></script>
+  <!-- Backdrop (click to close) -->
+  <div class="cart-backdrop" id="cartBackdrop" hidden></div>
+
+  <!-- Cart Drawer -->
+  <aside class="cart" id="cartDrawer" hidden aria-hidden="true">
+    <div class="cart-top">
+      <h2>Your Cart</h2>
+      <button class="smallbtn" id="closeCartBtn" type="button">Close</button>
+    </div>
+
+    <div class="cart-items" id="cartItems"></div>
+
+    <div class="cart-actions">
+      <button class="btn full" id="checkoutBtn" type="button">
+        Checkout
+      </button>
+      <button class="smallbtn" id="clearCartBtn" type="button">
+        Clear cart
+      </button>
+    </div>
+
+    <p class="notice">
+      Final pricing + confirmation will happen at checkout.
+    </p>
+  </aside>
+
+  <script src="assets/cart.js?v=4"></script>
 
   <script>
     function toast(msg) {
@@ -172,8 +175,32 @@
       });
     }
 
+    // Drawer + Backdrop
     const drawer = document.getElementById("cartDrawer");
+    const backdrop = document.getElementById("cartBackdrop");
     const cartItemsEl = document.getElementById("cartItems");
+
+    function openCart() {
+      drawer.hidden = false;
+      backdrop.hidden = false;
+      drawer.setAttribute("aria-hidden", "false");
+
+      // allow CSS to animate in
+      requestAnimationFrame(() => drawer.classList.add("is-open"));
+
+      renderCart();
+    }
+
+    function closeCart() {
+      drawer.classList.remove("is-open");
+      drawer.setAttribute("aria-hidden", "true");
+
+      // wait for slide-out transition, then hide
+      setTimeout(() => {
+        drawer.hidden = true;
+        backdrop.hidden = true;
+      }, 180);
+    }
 
     function renderCart() {
       if (!window.Cart) return;
@@ -195,17 +222,18 @@
         row.innerHTML = `
           <div class="cart-left">
             <span class="cart-title">${product ? product.name : item.sku}</span>
-            <span class="cart-price">Qty</span>
+            <span class="cart-price">Quantity</span>
           </div>
 
           <div class="cart-right">
-            <input class="qty" type="number" min="1" value="${item.qty}" />
-            <button class="smallbtn" type="button">✕</button>
+            <input class="qty" type="number" min="1" value="${Number(item.qty) || 1}" />
+            <button class="smallbtn" type="button" aria-label="Remove">✕</button>
           </div>
         `;
 
         row.querySelector("input").addEventListener("change", e => {
-          window.Cart.setQty(item.sku, e.target.value);
+          const nextQty = Math.max(1, Number(e.target.value || 1));
+          window.Cart.setQty(item.sku, nextQty);
           syncBadge();
           renderCart();
         });
@@ -221,13 +249,15 @@
     }
 
     // Open / close cart
-    document.getElementById("openCartBtn").addEventListener("click", () => {
-      drawer.hidden = false;
-      renderCart();
-    });
+    document.getElementById("openCartBtn").addEventListener("click", openCart);
+    document.getElementById("closeCartBtn").addEventListener("click", closeCart);
 
-    document.getElementById("closeCartBtn").addEventListener("click", () => {
-      drawer.hidden = true;
+    // Click backdrop to close
+    backdrop.addEventListener("click", closeCart);
+
+    // ESC to close
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape" && !drawer.hidden) closeCart();
     });
 
     // Clear cart
