@@ -42,7 +42,6 @@
       </div>
     </section>
 
-    <!-- Products render here -->
     <section class="products" id="productGrid"></section>
 
     <footer class="footer">
@@ -54,11 +53,9 @@
     </footer>
   </main>
 
-  <!-- Cart (must load BEFORE shop script below) -->
   <script src="assets/cart.js?v=3"></script>
 
   <script>
-    // Tiny toast (no CSS required)
     function toast(msg) {
       const t = document.createElement("div");
       t.textContent = msg;
@@ -74,7 +71,7 @@
       setTimeout(() => t.remove(), 1400);
     }
 
-    // --- PRODUCTS (add more here)
+    // Add products here (copy/paste an object)
     const PRODUCTS = [
       {
         sku: "red_sea_surf_classic",
@@ -85,7 +82,6 @@
       }
     ];
 
-    // --- Render product grid
     const grid = document.getElementById("productGrid");
 
     grid.innerHTML = PRODUCTS.map(p => `
@@ -95,14 +91,14 @@
         </div>
 
         <div class="p-body">
-          <div style="display:flex; justify-content:space-between; align-items:center; gap:10px;">
-            <h3 style="margin:0;">${p.name}</h3>
-            ${p.tag ? `<span class="tag" style="border:1px solid rgba(0,0,0,.12); padding:6px 10px; font-size:12px; font-weight:800;">${p.tag}</span>` : ``}
+          <div class="p-top">
+            <h3>${p.name}</h3>
+            ${p.tag ? `<span class="tag">${p.tag}</span>` : ``}
           </div>
 
-          <p style="margin-top:8px;">${p.desc}</p>
+          <p>${p.desc}</p>
 
-          <div style="display:flex; gap:10px; margin-top:12px; flex-wrap:wrap;">
+          <div class="p-actions">
             <button class="smallbtn" type="button" data-add="1" data-sku="${p.sku}">
               Add to cart
             </button>
@@ -112,7 +108,6 @@
       </article>
     `).join("");
 
-    // --- Badge update
     function syncBadge() {
       const badge = document.getElementById("cartCount");
       if (!badge) return;
@@ -122,7 +117,6 @@
         return;
       }
 
-      // fallback if Cart didn't load
       try {
         const raw = localStorage.getItem("gilded_cart_v1");
         const items = raw ? JSON.parse(raw) : [];
@@ -135,7 +129,6 @@
       }
     }
 
-    // --- Wire add buttons
     function wireAddButtons() {
       document.querySelectorAll("[data-add][data-sku]").forEach(btn => {
         btn.addEventListener("click", () => {
@@ -154,15 +147,12 @@
       });
     }
 
-    // --- Cart button
-    const openCartBtn = document.getElementById("openCartBtn");
-    openCartBtn.addEventListener("click", () => {
+    document.getElementById("openCartBtn").addEventListener("click", () => {
       syncBadge();
       const items = window.Cart ? window.Cart.read() : [];
       alert(items.length ? JSON.stringify(items, null, 2) : "Cart is empty.");
     });
 
-    // Init
     syncBadge();
     wireAddButtons();
     console.log("Shop scripts loaded. Cart present:", !!window.Cart);
