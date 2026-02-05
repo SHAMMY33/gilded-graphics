@@ -6,6 +6,7 @@ window.PRODUCTS = [
     sku: "red_sea_surf_classic",
     name: "Red Sea Surf Classic",
     price: 35,
+    priceId: "price_1SwDoyJwlrm4SccW27tvLMGy", // <-- STRIPE PRICE ID
     image: "assets/images/products/red_sea001.jpg",
     tag: "Best Seller",
     desc: "DTF tee print • bold + clean"
