@@ -182,9 +182,9 @@
           <div class="p-img">
             ${p.image ? `<img src="${p.image}" alt="${p.name}" onerror="this.remove()">` : ``}
 
-            <!-- Add-to-cart bag (BOTTOM-LEFT) -->
+            <!-- Add-to-cart bag (BOTTOM-RGHT) -->
             <button class="add-bag" type="button" data-sku="${p.sku}" aria-label="Add ${p.name} to cart">
-              <img src="assets/images/shopping-bag-empty.png" alt="" aria-hidden="true">
+              <img src="assets/images/shopping-bag-full.png" alt="" aria-hidden="true">
             </button>
           </div>
 
@@ -305,12 +305,46 @@
       window.dispatchEvent(new Event("gilded:cart-changed"));
     });
 
-    byId("checkoutBtn").addEventListener("click", () => {
-      const items = window.Cart.read();
-      if (!items.length) return toast("Cart is empty");
-      toast("Next: send cart to Stripe checkout");
-      console.log("Cart to checkout:", items);
-    });
+      // ... keep everything you already have ABOVE this ...
+
+  byId("checkoutBtn")?.addEventListener("click", async () => {
+    if (!window.Cart) return;
+
+    const items = window.Cart.read(); // [{sku, qty}]
+    if (!items.length) {
+      toast("Cart is empty");
+      return;
+    }
+
+    try {
+      const res = await fetch("https://gilded-checkout.vercel.app/api/checkout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ items })
+      });
+
+      if (!res.ok) {
+        const txt = await res.text();
+        console.error("Checkout error:", txt);
+        toast("Checkout failed — see console");
+        return;
+      }
+
+      const data = await res.json();
+      if (!data.url) {
+        console.error("Missing url:", data);
+        toast("Checkout failed — missing URL");
+        return;
+      }
+
+      // send them to Stripe Checkout
+      window.location.href = data.url;
+
+    } catch (err) {
+      console.error(err);
+      toast("Checkout error — network blocked?");
+    }
+  });
 
     // optional cross-page updates
     window.addEventListener("gilded:cart-changed", () => {
