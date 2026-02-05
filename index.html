@@ -92,7 +92,29 @@
     </footer>
   </main>
 
- <!-- Cart storage -->
+  <!-- Backdrop -->
+  <div class="cart-backdrop" id="cartBackdrop" hidden></div>
+
+  <!-- Cart Drawer -->
+  <aside class="cart" id="cartDrawer" hidden>
+    <div class="cart-top">
+      <h2>Your Cart</h2>
+      <button class="smallbtn" id="closeCartBtn" type="button">Close</button>
+    </div>
+
+    <div class="cart-items" id="cartItems"></div>
+
+    <div class="cart-actions">
+      <button class="btn full" id="checkoutBtn" type="button">Checkout</button>
+      <button class="smallbtn" id="clearCartBtn" type="button">Clear cart</button>
+    </div>
+
+    <p class="notice">
+      Add items on the Shop page. Cart persists across pages.
+    </p>
+  </aside>
+  
+  <!-- Cart storage -->
   <script src="assets/cart.js?v=4"></script>
 
   <!-- Shared product catalog (MUST exist) -->
