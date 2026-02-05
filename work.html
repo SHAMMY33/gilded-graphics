@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Work • Gilded Graphics</title>
-  <meta name="description" content="Concepts and recent work." />
+  <title>Shop • Gilded Graphics</title>
+  <meta name="description" content="Product list for apparel and design services." />
   <link rel="stylesheet" href="css/style.css?v=4" />
 </head>
 
@@ -17,26 +17,26 @@
 
   <header class="nav">
     <a class="brand" href="index.html">GILDED</a>
-    <nav class="links">
-      <a href="shop.html">Shop</a>
-      <a class="active" href="work.html">Work</a>
 
-      <!-- Cart icon -->
+    <nav class="links">
+      <a class="active" href="shop.html">Shop</a>
+      <a href="work.html">Work</a>
+
+      <!-- Cart icon (between Work and Start an Order) -->
       <button class="iconbtn" id="openCartBtn" type="button" aria-label="Open cart">
         <img
           id="cartIcon"
           src="assets/images/shopping-bag-empty.png"
-          data-empty="assets/images/shopping-bag-empty.png"
-          data-full="assets/images/shopping-bag-full.png"
-          alt=""
+          alt="Cart"
         />
+        <span id="cartCount" class="badge" aria-label="Cart item count">0</span>
       </button>
 
       <a class="btn" href="order.html">Start an Order</a>
     </nav>
   </header>
 
-  <main class="wrap">
+   <main class="wrap">
     <section class="pagehead">
       <h1>Work</h1>
       <p class="muted">Concept work + prints. This page grows weekly.</p>
@@ -100,37 +100,6 @@
       </div>
     </footer>
   </main>
-
-  <main class="wrap">
-    <section class="pagehead">
-      <h1>Products</h1>
-      <p class="muted">Add items to cart. Checkout will open Stripe.</p>
-    </section>
-
-    <!-- Products render here -->
-    <section class="products" id="productGrid"></section>
-
-    <!-- Backdrop -->
-    <div class="cart-backdrop" id="cartBackdrop" hidden></div>
-
-    <!-- Cart Drawer -->
-    <aside class="cart" id="cartDrawer" hidden aria-label="Cart drawer">
-      <div class="cart-top">
-        <h2>Your Cart</h2>
-        <button class="smallbtn" id="closeCartBtn" type="button">Close</button>
-      </div>
-
-      <div class="cart-items" id="cartItems"></div>
-
-      <div class="cart-actions">
-        <button class="btn full" id="checkoutBtn" type="button">Checkout</button>
-        <button class="smallbtn" id="clearCartBtn" type="button">Clear cart</button>
-      </div>
-
-      <p class="notice">
-        Checkout opens Stripe. Cart items are sent as a bundle.
-      </p>
-    </aside>
 
   <!-- cart storage -->
   <script src="assets/cart.js?v=4"></script>
