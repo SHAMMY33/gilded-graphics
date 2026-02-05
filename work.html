@@ -129,9 +129,26 @@
     </footer>
   </main>
 
+
   <!-- cart storage -->
   <script src="assets/cart.js?v=4"></script>
-  
+
+  <script>
+    // ---------- tiny toast ----------
+    function toast(msg) {
+      const t = document.createElement("div");
+      t.textContent = msg;
+      t.style.position = "fixed";
+      t.style.right = "18px";
+      t.style.bottom = "18px";
+      t.style.padding = "10px 12px";
+      t.style.border = "1px solid rgba(0,0,0,.15)";
+      t.style.background = "#fff";
+      t.style.fontWeight = "800";
+      t.style.zIndex = "9999";
+      document.body.appendChild(t);
+      setTimeout(() => t.remove(), 1400);
+    }
  
 
   <!-- Cart logic -->
