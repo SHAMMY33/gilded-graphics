@@ -11,11 +11,11 @@ window.PRODUCTS = [
     desc: "DTF tee print • bold + clean"
   },
   {
-    sku: "dtf_hoodie_print",
-    name: "DTF Hoodie Print",
-    price: 50,
-    image: "assets/images/dtf-hoodie-print.jpg",
+    sku: "no27_riders_reserve",
+    name: "No. 27 - Rider's Reserve",
+    price: 35,
+    image: "assets/images/products/no27_001.jpg",
     tag: "",
-    desc: "Front/back options • heavyweight • durable prints"
+    desc: "Smoke'em if you gott'em"
   }
 ];
