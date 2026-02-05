@@ -92,64 +92,100 @@
     </footer>
   </main>
 
-  <!-- Cart Drawer (shared across pages) -->
-  <div class="cart-backdrop" id="cartBackdrop" hidden></div>
-
-  <aside class="cart" id="cartDrawer" hidden aria-label="Cart drawer">
-    <div class="cart-top">
-      <h2>Your Cart</h2>
-      <button class="smallbtn" id="closeCartBtn" type="button">Close</button>
-    </div>
-
-    <div class="cart-items" id="cartItems"></div>
-
-    <div class="cart-actions">
-      <a class="btn full" href="shop.html">Go to Shop</a>
-      <button class="smallbtn" id="clearCartBtn" type="button">Clear cart</button>
-    </div>
-
-    <p class="notice">Checkout happens from the Shop page.</p>
-  </aside>
-
+ <!-- Cart storage -->
   <script src="assets/cart.js?v=4"></script>
 
+  <!-- Shared product catalog (MUST exist) -->
+  <script src="assets/products.js?v=1"></script>
+
   <script>
-    // Year
-    document.getElementById("y").textContent = new Date().getFullYear();
-
-    // --- Cart Drawer UI (shared)
-    const drawer = document.getElementById("cartDrawer");
-    const backdrop = document.getElementById("cartBackdrop");
-    const openBtn = document.getElementById("openCartBtn");
-    const closeBtn = document.getElementById("closeCartBtn");
-    const clearBtn = document.getElementById("clearCartBtn");
-    const itemsEl = document.getElementById("cartItems");
-
-    // Minimal name map (shop.html will have the full product list)
-    const NAME_MAP = {
-      red_sea_surf_classic: "Red Sea Surf Classic"
-    };
-
-    function openCart() {
-      drawer.hidden = false;
-      backdrop.hidden = false;
-      drawer.classList.add("is-open");
-      renderCart();
+    function toast(msg) {
+      const t = document.createElement("div");
+      t.textContent = msg;
+      t.style.position = "fixed";
+      t.style.right = "18px";
+      t.style.bottom = "18px";
+      t.style.padding = "10px 12px";
+      t.style.border = "1px solid rgba(0,0,0,.15)";
+      t.style.background = "#fff";
+      t.style.fontWeight = "800";
+      t.style.zIndex = "9999";
+      document.body.appendChild(t);
+      setTimeout(() => t.remove(), 1400);
     }
 
-    function closeCart() {
-      drawer.classList.remove("is-open");
-      // let transition play, then hide
-      setTimeout(() => {
-        drawer.hidden = true;
-        backdrop.hidden = true;
-      }, 180);
+    function byId(id){ return document.getElementById(id); }
+    function money(n){ return "$" + Number(n || 0).toFixed(2); }
+
+    function getCatalog(){
+      return Array.isArray(window.PRODUCTS) ? window.PRODUCTS : [];
+    }
+
+    function updateCartIcon() {
+      const icon = byId("cartIcon");
+      if (!icon || !window.Cart) return;
+
+      const n = window.Cart.count();
+      icon.src = n > 0 ? icon.dataset.full : icon.dataset.empty;
+    }
+
+    function renderProducts() {
+      const grid = byId("productGrid");
+      if (!grid) return;
+
+      const PRODUCTS = getCatalog();
+
+      if (!PRODUCTS.length) {
+        grid.innerHTML = "<p class='muted'>No products yet. Add them in assets/products.js</p>";
+        return;
+      }
+
+      grid.innerHTML = PRODUCTS.map(p => `
+        <article class="p-card">
+          <div class="p-img">
+            ${p.image ? `<img src="${p.image}" alt="${p.name}" onerror="this.remove()">` : ``}
+
+            <!-- Add-to-cart bag (BOTTOM-LEFT) -->
+            <button class="add-bag" type="button" data-sku="${p.sku}" aria-label="Add ${p.name} to cart">
+              <img src="assets/images/shopping-bag-empty.png" alt="" aria-hidden="true">
+            </button>
+          </div>
+
+          <div class="p-body">
+            <div class="p-top">
+              <h3>${p.name}</h3>
+              ${p.tag ? `<span class="tag">${p.tag}</span>` : ``}
+            </div>
+
+            <div class="price">${money(p.price)}</div>
+
+            <p>${p.desc || ""}</p>
+          </div>
+        </article>
+      `).join("");
+
+      // wire bag buttons
+      grid.querySelectorAll("button.add-bag[data-sku]").forEach(btn => {
+        btn.addEventListener("click", () => {
+          if (!window.Cart) {
+            toast("Cart failed to load");
+            return;
+          }
+          window.Cart.add(btn.getAttribute("data-sku"), 1);
+          updateCartIcon();
+          toast("Added to cart");
+          window.dispatchEvent(new Event("gilded:cart-changed"));
+        });
+      });
     }
 
     function renderCart() {
-      if (!window.Cart) return;
+      const itemsEl = byId("cartItems");
+      if (!itemsEl || !window.Cart) return;
 
       const items = window.Cart.read();
+      const catalog = getCatalog();
+
       itemsEl.innerHTML = "";
 
       if (!items.length) {
@@ -158,45 +194,90 @@
       }
 
       items.forEach(item => {
+        const product = catalog.find(p => p.sku === item.sku);
+
         const row = document.createElement("div");
         row.className = "cart-item";
 
         row.innerHTML = `
           <div class="cart-left">
-            <span class="cart-title">${NAME_MAP[item.sku] || item.sku}</span>
-            <span class="cart-price">Qty</span>
+            <span class="cart-title">${product ? product.name : item.sku}</span>
+            <span class="cart-price">${product ? money(product.price) : ""} • Qty</span>
           </div>
+
           <div class="cart-right">
             <input class="qty" type="number" min="1" value="${Number(item.qty) || 1}" />
-            <button class="smallbtn" type="button" aria-label="Remove item">✕</button>
+            <button class="smallbtn" type="button" aria-label="Remove">✕</button>
           </div>
         `;
 
-        row.querySelector("input").addEventListener("change", (e) => {
-          window.Cart.setQty(item.sku, e.target.value);
+        const qtyInput = row.querySelector("input.qty");
+        const removeBtn = row.querySelector("button[aria-label='Remove']");
+
+        qtyInput.addEventListener("change", () => {
+          const next = parseInt(qtyInput.value, 10);
+          window.Cart.setQty(item.sku, Number.isFinite(next) ? next : (Number(item.qty) || 1));
+          updateCartIcon();
+          renderCart();
+          window.dispatchEvent(new Event("gilded:cart-changed"));
         });
 
-        row.querySelector("button").addEventListener("click", () => {
+        removeBtn.addEventListener("click", () => {
           window.Cart.remove(item.sku);
+          updateCartIcon();
+          renderCart();
+          window.dispatchEvent(new Event("gilded:cart-changed"));
         });
 
         itemsEl.appendChild(row);
       });
     }
 
-    // Wire buttons
-    if (openBtn) openBtn.addEventListener("click", openCart);
-    if (closeBtn) closeBtn.addEventListener("click", closeCart);
-    if (backdrop) backdrop.addEventListener("click", closeCart);
+    // Drawer controls
+    const drawer = byId("cartDrawer");
+    const backdrop = byId("cartBackdrop");
 
-    if (clearBtn) {
-      clearBtn.addEventListener("click", () => {
-        window.Cart.clear();
-      });
+    function openCart(){
+      drawer.hidden = false;
+      backdrop.hidden = false;
+      drawer.classList.add("is-open");
+      updateCartIcon();
+      renderCart();
     }
 
-    // Re-render on any cart change (from any page action)
+    function closeCart(){
+      drawer.classList.remove("is-open");
+      setTimeout(() => {
+        drawer.hidden = true;
+        backdrop.hidden = true;
+      }, 180);
+    }
+
+    // Init
+    renderProducts();
+    updateCartIcon();
+
+    byId("openCartBtn").addEventListener("click", openCart);
+    byId("closeCartBtn").addEventListener("click", closeCart);
+    backdrop.addEventListener("click", closeCart);
+
+    byId("clearCartBtn").addEventListener("click", () => {
+      window.Cart.clear();
+      updateCartIcon();
+      renderCart();
+      window.dispatchEvent(new Event("gilded:cart-changed"));
+    });
+
+    byId("checkoutBtn").addEventListener("click", () => {
+      const items = window.Cart.read();
+      if (!items.length) return toast("Cart is empty");
+      toast("Next: send cart to Stripe checkout");
+      console.log("Cart to checkout:", items);
+    });
+
+    // optional cross-page updates
     window.addEventListener("gilded:cart-changed", () => {
+      updateCartIcon();
       if (drawer && !drawer.hidden) renderCart();
     });
   </script>
