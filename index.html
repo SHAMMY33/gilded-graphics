@@ -16,24 +16,23 @@
 
   <header class="nav">
     <a class="brand" href="index.html">GILDED</a>
-   <nav class="links">
-  <a class="active" href="shop.html">Shop</a>
-  <a href="work.html">Work</a>
 
-  <!-- Cart icon (between Work and Start an Order) -->
-  <button class="iconbtn" id="openCartBtn" type="button" aria-label="Open cart">
-    <img
-      id="cartIcon"
-      src="assets/images/cart-empty.png"
-      data-empty="assets/images/shopping-bag-empty.png"
-      data-full="assets/images/shopping-bag-full.png"
-      alt=""
-    />
-  </button>
+    <nav class="links">
+      <a href="shop.html">Shop</a>
+      <a href="work.html">Work</a>
 
-  <a class="btn" href="order.html">Start an Order</a>
-</nav>
+      <!-- Cart icon (between Work and Start an Order) -->
+      <button class="iconbtn" id="openCartBtn" type="button" aria-label="Open cart">
+        <img
+          id="cartIcon"
+          src="assets/images/shopping-bag-empty.png"
+          alt="Cart"
+        />
+        <span id="cartCount" class="badge" aria-label="Cart item count">0</span>
+      </button>
 
+      <a class="btn" href="order.html">Start an Order</a>
+    </nav>
   </header>
 
   <main class="wrap">
@@ -43,6 +42,7 @@
         Gilded Graphics designs and prints apparel + visuals for people who want their stuff to look legit.
         DTF printing, brand graphics, and merch built to stand out.
       </p>
+
       <div class="hero-cta">
         <a class="btn" href="order.html">Start an Order</a>
         <a class="btn ghost" href="shop.html">Browse Products</a>
@@ -92,9 +92,113 @@
     </footer>
   </main>
 
+  <!-- Cart Drawer (shared across pages) -->
+  <div class="cart-backdrop" id="cartBackdrop" hidden></div>
+
+  <aside class="cart" id="cartDrawer" hidden aria-label="Cart drawer">
+    <div class="cart-top">
+      <h2>Your Cart</h2>
+      <button class="smallbtn" id="closeCartBtn" type="button">Close</button>
+    </div>
+
+    <div class="cart-items" id="cartItems"></div>
+
+    <div class="cart-actions">
+      <a class="btn full" href="shop.html">Go to Shop</a>
+      <button class="smallbtn" id="clearCartBtn" type="button">Clear cart</button>
+    </div>
+
+    <p class="notice">Checkout happens from the Shop page.</p>
+  </aside>
+
+  <script src="assets/cart.js?v=4"></script>
+
   <script>
+    // Year
     document.getElementById("y").textContent = new Date().getFullYear();
+
+    // --- Cart Drawer UI (shared)
+    const drawer = document.getElementById("cartDrawer");
+    const backdrop = document.getElementById("cartBackdrop");
+    const openBtn = document.getElementById("openCartBtn");
+    const closeBtn = document.getElementById("closeCartBtn");
+    const clearBtn = document.getElementById("clearCartBtn");
+    const itemsEl = document.getElementById("cartItems");
+
+    // Minimal name map (shop.html will have the full product list)
+    const NAME_MAP = {
+      red_sea_surf_classic: "Red Sea Surf Classic"
+    };
+
+    function openCart() {
+      drawer.hidden = false;
+      backdrop.hidden = false;
+      drawer.classList.add("is-open");
+      renderCart();
+    }
+
+    function closeCart() {
+      drawer.classList.remove("is-open");
+      // let transition play, then hide
+      setTimeout(() => {
+        drawer.hidden = true;
+        backdrop.hidden = true;
+      }, 180);
+    }
+
+    function renderCart() {
+      if (!window.Cart) return;
+
+      const items = window.Cart.read();
+      itemsEl.innerHTML = "";
+
+      if (!items.length) {
+        itemsEl.innerHTML = "<p class='muted'>Your cart is empty.</p>";
+        return;
+      }
+
+      items.forEach(item => {
+        const row = document.createElement("div");
+        row.className = "cart-item";
+
+        row.innerHTML = `
+          <div class="cart-left">
+            <span class="cart-title">${NAME_MAP[item.sku] || item.sku}</span>
+            <span class="cart-price">Qty</span>
+          </div>
+          <div class="cart-right">
+            <input class="qty" type="number" min="1" value="${Number(item.qty) || 1}" />
+            <button class="smallbtn" type="button" aria-label="Remove item">✕</button>
+          </div>
+        `;
+
+        row.querySelector("input").addEventListener("change", (e) => {
+          window.Cart.setQty(item.sku, e.target.value);
+        });
+
+        row.querySelector("button").addEventListener("click", () => {
+          window.Cart.remove(item.sku);
+        });
+
+        itemsEl.appendChild(row);
+      });
+    }
+
+    // Wire buttons
+    if (openBtn) openBtn.addEventListener("click", openCart);
+    if (closeBtn) closeBtn.addEventListener("click", closeCart);
+    if (backdrop) backdrop.addEventListener("click", closeCart);
+
+    if (clearBtn) {
+      clearBtn.addEventListener("click", () => {
+        window.Cart.clear();
+      });
+    }
+
+    // Re-render on any cart change (from any page action)
+    window.addEventListener("gilded:cart-changed", () => {
+      if (drawer && !drawer.hidden) renderCart();
+    });
   </script>
 </body>
 </html>
-< pages poke -->
