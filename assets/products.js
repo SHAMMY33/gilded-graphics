@@ -16,8 +16,8 @@ window.PRODUCTS = [
     name: "No. 27 - Rider's Reserve",
     price: 35,
     priceId: "price_1SwbFUJwlrm4SccWG8kHBrzh", // <-- STRIPE PRICE ID
-    image: "assets/images/products/no27_007.jpg",
-    tag: "Cowboy Favorite",
+    image: "assets/images/products/no27_001.jpg",
+    tag: "Cowboy's Favorite Tee",
     desc: "Smoke'em if you gott'em"
   }
 ];
