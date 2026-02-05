@@ -60,13 +60,6 @@ a:link, a:visited, a:hover, a:active{ color: inherit; }
 
 
 
-/* Cart icon image size */
-.iconbtn img{
-  width:20px;
-  height:20px;
-  display:block;
-}
-
 /* Navigation */
 .nav{
   position:sticky;
