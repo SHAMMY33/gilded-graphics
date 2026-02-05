@@ -15,6 +15,7 @@ window.PRODUCTS = [
     sku: "no27_riders_reserve",
     name: "No. 27 - Rider's Reserve",
     price: 35,
+    priceId: "price_1SwbFUJwlrm4SccWG8kHBrzh", // <-- STRIPE PRICE ID
     image: "assets/images/products/no27_001.jpg",
     tag: "",
     desc: "Smoke'em if you gott'em"
