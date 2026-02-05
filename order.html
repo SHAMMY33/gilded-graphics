@@ -20,16 +20,16 @@
   <a class="active" href="shop.html">Shop</a>
   <a href="work.html">Work</a>
 
-  <!-- Cart icon (between Work and Start an Order) -->
-  <button class="iconbtn" id="openCartBtn" type="button" aria-label="Open cart">
-    <img
-      id="cartIcon"
-      src="assets/images/cart-empty.png"
-      data-empty="assets/images/cart-empty.png"
-      data-full="assets/images/cart-full.png"
-      alt=""
-    />
-  </button>
+ <!-- Cart icon -->
+      <button class="iconbtn" id="openCartBtn" type="button" aria-label="Open cart">
+        <img
+          id="cartIcon"
+          src="assets/images/shopping-bag-empty.png"
+          data-empty="assets/images/shopping-bag-empty.png"
+          data-full="assets/images/shopping-bag-full.png"
+          alt=""
+        />
+      </button>
 
   <a class="btn" href="order.html">Start an Order</a>
 </nav>
@@ -107,5 +107,218 @@
       </div>
     </footer>
   </main>
+
+    <!-- Backdrop -->
+  <div class="cart-backdrop" id="cartBackdrop" hidden></div>
+
+  <!-- Cart Drawer -->
+  <aside class="cart" id="cartDrawer" hidden>
+    <div class="cart-top">
+      <h2>Your Cart</h2>
+      <button class="smallbtn" id="closeCartBtn" type="button">Close</button>
+    </div>
+
+    <div class="cart-items" id="cartItems"></div>
+
+    <div class="cart-actions">
+      <button class="btn full" id="checkoutBtn" type="button">Checkout</button>
+      <button class="smallbtn" id="clearCartBtn" type="button">Clear cart</button>
+    </div>
+
+    <p class="notice">
+      Add items on the Shop page. Cart persists across pages.
+    </p>
+  </aside>
+
+  <!-- Cart storage -->
+  <script src="assets/cart.js?v=4"></script>
+
+  <!-- Shared product catalog (MUST exist) -->
+  <script src="assets/products.js?v=1"></script>
+
+  <script>
+    function toast(msg) {
+      const t = document.createElement("div");
+      t.textContent = msg;
+      t.style.position = "fixed";
+      t.style.right = "18px";
+      t.style.bottom = "18px";
+      t.style.padding = "10px 12px";
+      t.style.border = "1px solid rgba(0,0,0,.15)";
+      t.style.background = "#fff";
+      t.style.fontWeight = "800";
+      t.style.zIndex = "9999";
+      document.body.appendChild(t);
+      setTimeout(() => t.remove(), 1400);
+    }
+
+    function byId(id){ return document.getElementById(id); }
+    function money(n){ return "$" + Number(n || 0).toFixed(2); }
+
+    function getCatalog(){
+      return Array.isArray(window.PRODUCTS) ? window.PRODUCTS : [];
+    }
+
+    function updateCartIcon() {
+      const icon = byId("cartIcon");
+      if (!icon || !window.Cart) return;
+
+      const n = window.Cart.count();
+      icon.src = n > 0 ? icon.dataset.full : icon.dataset.empty;
+    }
+
+    function renderProducts() {
+      const grid = byId("productGrid");
+      if (!grid) return;
+
+      const PRODUCTS = getCatalog();
+
+      if (!PRODUCTS.length) {
+        grid.innerHTML = "<p class='muted'>No products yet. Add them in assets/products.js</p>";
+        return;
+      }
+
+      grid.innerHTML = PRODUCTS.map(p => `
+        <article class="p-card">
+          <div class="p-img">
+            ${p.image ? `<img src="${p.image}" alt="${p.name}" onerror="this.remove()">` : ``}
+
+            <!-- Add-to-cart bag (BOTTOM-LEFT) -->
+            <button class="add-bag" type="button" data-sku="${p.sku}" aria-label="Add ${p.name} to cart">
+              <img src="assets/images/shopping-bag-empty.png" alt="" aria-hidden="true">
+            </button>
+          </div>
+
+          <div class="p-body">
+            <div class="p-top">
+              <h3>${p.name}</h3>
+              ${p.tag ? `<span class="tag">${p.tag}</span>` : ``}
+            </div>
+
+            <div class="price">${money(p.price)}</div>
+
+            <p>${p.desc || ""}</p>
+          </div>
+        </article>
+      `).join("");
+
+      // wire bag buttons
+      grid.querySelectorAll("button.add-bag[data-sku]").forEach(btn => {
+        btn.addEventListener("click", () => {
+          if (!window.Cart) {
+            toast("Cart failed to load");
+            return;
+          }
+          window.Cart.add(btn.getAttribute("data-sku"), 1);
+          updateCartIcon();
+          toast("Added to cart");
+          window.dispatchEvent(new Event("gilded:cart-changed"));
+        });
+      });
+    }
+
+    function renderCart() {
+      const itemsEl = byId("cartItems");
+      if (!itemsEl || !window.Cart) return;
+
+      const items = window.Cart.read();
+      const catalog = getCatalog();
+
+      itemsEl.innerHTML = "";
+
+      if (!items.length) {
+        itemsEl.innerHTML = "<p class='muted'>Your cart is empty.</p>";
+        return;
+      }
+
+      items.forEach(item => {
+        const product = catalog.find(p => p.sku === item.sku);
+
+        const row = document.createElement("div");
+        row.className = "cart-item";
+
+        row.innerHTML = `
+          <div class="cart-left">
+            <span class="cart-title">${product ? product.name : item.sku}</span>
+            <span class="cart-price">${product ? money(product.price) : ""} • Qty</span>
+          </div>
+
+          <div class="cart-right">
+            <input class="qty" type="number" min="1" value="${Number(item.qty) || 1}" />
+            <button class="smallbtn" type="button" aria-label="Remove">✕</button>
+          </div>
+        `;
+
+        const qtyInput = row.querySelector("input.qty");
+        const removeBtn = row.querySelector("button[aria-label='Remove']");
+
+        qtyInput.addEventListener("change", () => {
+          const next = parseInt(qtyInput.value, 10);
+          window.Cart.setQty(item.sku, Number.isFinite(next) ? next : (Number(item.qty) || 1));
+          updateCartIcon();
+          renderCart();
+          window.dispatchEvent(new Event("gilded:cart-changed"));
+        });
+
+        removeBtn.addEventListener("click", () => {
+          window.Cart.remove(item.sku);
+          updateCartIcon();
+          renderCart();
+          window.dispatchEvent(new Event("gilded:cart-changed"));
+        });
+
+        itemsEl.appendChild(row);
+      });
+    }
+
+    // Drawer controls
+    const drawer = byId("cartDrawer");
+    const backdrop = byId("cartBackdrop");
+
+    function openCart(){
+      drawer.hidden = false;
+      backdrop.hidden = false;
+      drawer.classList.add("is-open");
+      updateCartIcon();
+      renderCart();
+    }
+
+    function closeCart(){
+      drawer.classList.remove("is-open");
+      setTimeout(() => {
+        drawer.hidden = true;
+        backdrop.hidden = true;
+      }, 180);
+    }
+
+    // Init
+    renderProducts();
+    updateCartIcon();
+
+    byId("openCartBtn").addEventListener("click", openCart);
+    byId("closeCartBtn").addEventListener("click", closeCart);
+    backdrop.addEventListener("click", closeCart);
+
+    byId("clearCartBtn").addEventListener("click", () => {
+      window.Cart.clear();
+      updateCartIcon();
+      renderCart();
+      window.dispatchEvent(new Event("gilded:cart-changed"));
+    });
+
+    byId("checkoutBtn").addEventListener("click", () => {
+      const items = window.Cart.read();
+      if (!items.length) return toast("Cart is empty");
+      toast("Next: send cart to Stripe checkout");
+      console.log("Cart to checkout:", items);
+    });
+
+    // optional cross-page updates
+    window.addEventListener("gilded:cart-changed", () => {
+      updateCartIcon();
+      if (drawer && !drawer.hidden) renderCart();
+    });
+  </script>
+  
 </body>
 </html>
