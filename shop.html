@@ -17,41 +17,29 @@
 
   <header class="nav">
     <a class="brand" href="index.html">GILDED</a>
-   <nav class="links">
-  <a class="active" href="shop.html">Shop</a>
-  <a href="work.html">Work</a>
 
-  <!-- Cart icon (between Work and Start an Order) -->
-  <button class="iconbtn" id="openCartBtn" type="button" aria-label="Open cart">
-    <img
-      id="cartIcon"
-      src="assets/images/cart-empty.png"
-      data-empty="assets/images/cart-empty.png"
-      data-full="assets/images/cart-full.png"
-      alt=""
-    />
-  </button>
+    <nav class="links">
+      <a class="active" href="shop.html">Shop</a>
+      <a href="work.html">Work</a>
 
-  <a class="btn" href="order.html">Start an Order</a>
-</nav>
+      <!-- Cart icon (between Work and Start an Order) -->
+      <button class="iconbtn" id="openCartBtn" type="button" aria-label="Open cart">
+        <img
+          id="cartIcon"
+          src="assets/images/shopping-bag-empty.png"
+          alt="Cart"
+        />
+        <span id="cartCount" class="badge" aria-label="Cart item count">0</span>
+      </button>
 
+      <a class="btn" href="order.html">Start an Order</a>
+    </nav>
   </header>
 
   <main class="wrap">
     <section class="pagehead">
       <h1>Products</h1>
       <p class="muted">Add items to cart. Checkout will open Stripe.</p>
-    </section>
-
-    <section class="shop-bar">
-      <button class="filter-btn" type="button" disabled>Filter</button>
-
-      <div style="display:flex; gap:10px; align-items:center;">
-
-        <button class="smallbtn" id="openCartBtn" type="button">
-          Cart <span id="cartCount" class="badge">0</span>
-        </button>
-      </div>
     </section>
 
     <!-- Products render here -->
@@ -61,7 +49,7 @@
     <div class="cart-backdrop" id="cartBackdrop" hidden></div>
 
     <!-- Cart Drawer -->
-    <aside class="cart" id="cartDrawer" hidden>
+    <aside class="cart" id="cartDrawer" hidden aria-label="Cart drawer">
       <div class="cart-top">
         <h2>Your Cart</h2>
         <button class="smallbtn" id="closeCartBtn" type="button">Close</button>
@@ -88,7 +76,7 @@
     </footer>
   </main>
 
-  <!-- IMPORTANT: cart.js must be plain script (no exports) -->
+  <!-- cart storage -->
   <script src="assets/cart.js?v=4"></script>
 
   <script>
@@ -123,7 +111,7 @@
         name: "DTF Hoodie Print",
         price: 50,
         desc: "Front/back options • heavyweight • durable prints",
-        image: "assets/images/dtf-hoodie-print.jpg",
+        image: "assets/images/products/dtf_hoodie001.jpg",
         tag: ""
       }
     ];
@@ -131,14 +119,17 @@
     // ---------- helpers ----------
     function byId(id){ return document.getElementById(id); }
 
-    function syncBadge() {
+    function updateCartIconAndBadge() {
       const badge = byId("cartCount");
-      if (!badge) return;
-      if (window.Cart && typeof window.Cart.count === "function") {
-        badge.textContent = String(window.Cart.count());
-      } else {
-        badge.textContent = "0";
-      }
+      const icon = byId("cartIcon");
+      if (!badge || !icon || !window.Cart) return;
+
+      const n = window.Cart.count();
+      badge.textContent = String(n);
+
+      icon.src = n > 0
+        ? "assets/images/shopping-bag-full.png"
+        : "assets/images/shopping-bag-empty.png";
     }
 
     function renderProducts() {
@@ -150,8 +141,9 @@
           <div class="p-img">
             ${p.image ? `<img src="${p.image}" alt="${p.name}" onerror="this.remove()">` : ``}
 
+            <!-- Add-to-cart bag (BOTTOM-LEFT per your request) -->
             <button class="add-bag" type="button" data-sku="${p.sku}" aria-label="Add ${p.name} to cart">
-              <img src="assets/images/shopping-bag.png" alt="" aria-hidden="true">
+              <img src="assets/images/shopping-bag-empty.png" alt="" aria-hidden="true">
             </button>
           </div>
 
@@ -176,10 +168,15 @@
             toast("Cart failed to load");
             return;
           }
+
           const sku = btn.getAttribute("data-sku");
           window.Cart.add(sku, 1);
-          syncBadge();
+
+          updateCartIconAndBadge();
           toast("Added to cart");
+
+          // tell other listeners (optional)
+          window.dispatchEvent(new Event("gilded:cart-changed"));
         });
       });
     }
@@ -208,7 +205,7 @@
           </div>
 
           <div class="cart-right">
-            <input class="qty" type="number" min="1" value="${item.qty}" />
+            <input class="qty" type="number" min="1" value="${Number(item.qty) || 1}" />
             <button class="smallbtn" type="button" aria-label="Remove">✕</button>
           </div>
         `;
@@ -218,15 +215,17 @@
 
         qtyInput.addEventListener("change", () => {
           const next = parseInt(qtyInput.value, 10);
-          window.Cart.setQty(item.sku, Number.isFinite(next) ? next : item.qty);
-          syncBadge();
+          window.Cart.setQty(item.sku, Number.isFinite(next) ? next : (Number(item.qty) || 1));
+          updateCartIconAndBadge();
           renderCart();
+          window.dispatchEvent(new Event("gilded:cart-changed"));
         });
 
         removeBtn.addEventListener("click", () => {
           window.Cart.remove(item.sku);
-          syncBadge();
+          updateCartIconAndBadge();
           renderCart();
+          window.dispatchEvent(new Event("gilded:cart-changed"));
         });
 
         itemsEl.appendChild(row);
@@ -242,7 +241,7 @@
       drawer.hidden = false;
       backdrop.hidden = false;
       drawer.classList.add("is-open");
-      syncBadge();
+      updateCartIconAndBadge();
       renderCart();
     }
 
@@ -259,7 +258,7 @@
     console.log("Shop scripts loaded. Cart present:", !!window.Cart);
 
     renderProducts();
-    syncBadge();
+    updateCartIconAndBadge();
 
     byId("openCartBtn")?.addEventListener("click", openCart);
     byId("closeCartBtn")?.addEventListener("click", closeCart);
@@ -267,8 +266,9 @@
 
     byId("clearCartBtn")?.addEventListener("click", () => {
       window.Cart?.clear();
-      syncBadge();
+      updateCartIconAndBadge();
       renderCart();
+      window.dispatchEvent(new Event("gilded:cart-changed"));
     });
 
     // Checkout stub (next step we connect to Stripe)
@@ -283,6 +283,12 @@
 
       toast("Next: send cart to Stripe checkout");
       console.log("Cart to checkout:", items);
+    });
+
+    // If any other page triggers updates (optional)
+    window.addEventListener("gilded:cart-changed", () => {
+      updateCartIconAndBadge();
+      if (drawer && !drawer.hidden) renderCart();
     });
   </script>
 </body>
