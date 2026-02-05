@@ -8,7 +8,7 @@ window.PRODUCTS = [
     price: 35,
     priceId: "price_1SwDoyJwlrm4SccW27tvLMGy", // <-- STRIPE PRICE ID
     image: "assets/images/products/red_sea001.jpg",
-    tag: "Best Seller",
+    tag: "",
     desc: "DTF tee print • bold + clean"
   },
   {
@@ -16,8 +16,8 @@ window.PRODUCTS = [
     name: "No. 27 - Rider's Reserve",
     price: 35,
     priceId: "price_1SwbFUJwlrm4SccWG8kHBrzh", // <-- STRIPE PRICE ID
-    image: "assets/images/products/no27_001.jpg",
-    tag: "",
+    image: "assets/images/products/no27_007.jpg",
+    tag: "Cowboy Favorite",
     desc: "Smoke'em if you gott'em"
   }
 ];
