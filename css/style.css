@@ -58,18 +58,7 @@ a:link, a:visited, a:hover, a:active{ color: inherit; }
 }
 .dot{opacity:.55}
 
-/* Header cart icon button */
-.iconbtn{
-  display:inline-flex;
-  align-items:center;
-  justify-content:center;
-  width:40px;
-  height:40px;
-  padding:0;
-  border:1px solid var(--line);
-  background:#fff;
-  cursor:pointer;
-}
+
 
 /* Cart icon image size */
 .iconbtn img{
