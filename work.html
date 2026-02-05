@@ -5,8 +5,9 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Work • Gilded Graphics</title>
   <meta name="description" content="Concepts and recent work." />
-  <link rel="stylesheet" href="css/style.css?v=3" />
+  <link rel="stylesheet" href="css/style.css?v=4" />
 </head>
+
 <body>
   <div class="bar">
     <span>DTF PRINT • DESIGN • FAST TURNAROUNDS</span>
@@ -16,24 +17,23 @@
 
   <header class="nav">
     <a class="brand" href="index.html">GILDED</a>
-   <nav class="links">
-  <a class="active" href="shop.html">Shop</a>
-  <a href="work.html">Work</a>
+    <nav class="links">
+      <a href="shop.html">Shop</a>
+      <a class="active" href="work.html">Work</a>
 
-  <!-- Cart icon (between Work and Start an Order) -->
-  <button class="iconbtn" id="openCartBtn" type="button" aria-label="Open cart">
-    <img
-      id="cartIcon"
-      src="assets/images/cart-empty.png"
-      data-empty="assets/images/cart-empty.png"
-      data-full="assets/images/cart-full.png"
-      alt=""
-    />
-  </button>
+      <!-- Cart icon -->
+      <button class="iconbtn" id="openCartBtn" type="button" aria-label="Open cart">
+        <img
+          id="cartIcon"
+          src="assets/images/shopping-bag-empty.png"
+          data-empty="assets/images/shopping-bag-empty.png"
+          data-full="assets/images/shopping-bag-full.png"
+          alt=""
+        />
+      </button>
 
-  <a class="btn" href="order.html">Start an Order</a>
-</nav>
-
+      <a class="btn" href="order.html">Start an Order</a>
+    </nav>
   </header>
 
   <main class="wrap">
@@ -43,12 +43,53 @@
     </section>
 
     <section class="products">
-      <article class="p-card"><div class="p-img"></div><div class="p-body"><h3>Concept Tee #1</h3><p class="muted">Drop a mockup image here soon.</p></div></article>
-      <article class="p-card"><div class="p-img"></div><div class="p-body"><h3>Concept Tee #2</h3><p class="muted">Drop a mockup image here soon.</p></div></article>
-      <article class="p-card"><div class="p-img"></div><div class="p-body"><h3>Logo Concept</h3><p class="muted">Show bold identity work.</p></div></article>
-      <article class="p-card"><div class="p-img"></div><div class="p-body"><h3>Flyer Layout</h3><p class="muted">Event / club poster style.</p></div></article>
-      <article class="p-card"><div class="p-img"></div><div class="p-body"><h3>Sticker Sheet</h3><p class="muted">Simple, clean cuts.</p></div></article>
-      <article class="p-card"><div class="p-img"></div><div class="p-body"><h3>DTF Print</h3><p class="muted">Photo coming soon.</p></div></article>
+      <article class="p-card">
+        <div class="p-img"></div>
+        <div class="p-body">
+          <h3>Concept Tee #1</h3>
+          <p class="muted">Drop a mockup image here soon.</p>
+        </div>
+      </article>
+
+      <article class="p-card">
+        <div class="p-img"></div>
+        <div class="p-body">
+          <h3>Concept Tee #2</h3>
+          <p class="muted">Drop a mockup image here soon.</p>
+        </div>
+      </article>
+
+      <article class="p-card">
+        <div class="p-img"></div>
+        <div class="p-body">
+          <h3>Logo Concept</h3>
+          <p class="muted">Show bold identity work.</p>
+        </div>
+      </article>
+
+      <article class="p-card">
+        <div class="p-img"></div>
+        <div class="p-body">
+          <h3>Flyer Layout</h3>
+          <p class="muted">Event / club poster style.</p>
+        </div>
+      </article>
+
+      <article class="p-card">
+        <div class="p-img"></div>
+        <div class="p-body">
+          <h3>Sticker Sheet</h3>
+          <p class="muted">Simple, clean cuts.</p>
+        </div>
+      </article>
+
+      <article class="p-card">
+        <div class="p-img"></div>
+        <div class="p-body">
+          <h3>DTF Print</h3>
+          <p class="muted">Photo coming soon.</p>
+        </div>
+      </article>
     </section>
 
     <footer class="footer">
@@ -59,5 +100,104 @@
       </div>
     </footer>
   </main>
+
+  <!-- Cart drawer + backdrop -->
+  <div class="cart-backdrop" id="cartBackdrop" hidden></div>
+
+  <aside class="cart" id="cartDrawer" hidden>
+    <div class="cart-top">
+      <h2>Your Cart</h2>
+      <button class="smallbtn" id="closeCartBtn" type="button">Close</button>
+    </div>
+
+    <div class="cart-items" id="cartItems"></div>
+
+    <div class="cart-actions">
+      <a class="btn full" href="shop.html">Go to Shop</a>
+      <button class="smallbtn" id="clearCartBtn" type="button">Clear cart</button>
+    </div>
+
+    <p class="notice">
+      Products are managed from the Shop page.
+    </p>
+  </aside>
+
+  <!-- Cart logic -->
+  <script src="assets/cart.js?v=4"></script>
+
+  <script>
+    const drawer = document.getElementById("cartDrawer");
+    const backdrop = document.getElementById("cartBackdrop");
+    const cartIcon = document.getElementById("cartIcon");
+
+    function updateCartIcon() {
+      if (!cartIcon || !window.Cart) return;
+      const count = window.Cart.count();
+      cartIcon.src = count > 0
+        ? cartIcon.dataset.full
+        : cartIcon.dataset.empty;
+    }
+
+    function renderCart() {
+      const el = document.getElementById("cartItems");
+      if (!el || !window.Cart) return;
+
+      const items = window.Cart.read();
+      el.innerHTML = "";
+
+      if (!items.length) {
+        el.innerHTML = "<p class='muted'>Your cart is empty.</p>";
+        return;
+      }
+
+      items.forEach(item => {
+        const row = document.createElement("div");
+        row.className = "cart-item";
+        row.innerHTML = `
+          <div class="cart-left">
+            <span class="cart-title">${item.sku}</span>
+            <span class="cart-price">Qty ${item.qty}</span>
+          </div>
+          <div class="cart-right">
+            <button class="smallbtn" type="button">✕</button>
+          </div>
+        `;
+        row.querySelector("button").addEventListener("click", () => {
+          window.Cart.remove(item.sku);
+          updateCartIcon();
+          renderCart();
+        });
+        el.appendChild(row);
+      });
+    }
+
+    function openCart() {
+      drawer.hidden = false;
+      backdrop.hidden = false;
+      drawer.classList.add("is-open");
+      renderCart();
+      updateCartIcon();
+    }
+
+    function closeCart() {
+      drawer.classList.remove("is-open");
+      setTimeout(() => {
+        drawer.hidden = true;
+        backdrop.hidden = true;
+      }, 180);
+    }
+
+    document.getElementById("openCartBtn").addEventListener("click", openCart);
+    document.getElementById("closeCartBtn").addEventListener("click", closeCart);
+    backdrop.addEventListener("click", closeCart);
+
+    document.getElementById("clearCartBtn").addEventListener("click", () => {
+      window.Cart.clear();
+      updateCartIcon();
+      renderCart();
+    });
+
+    updateCartIcon();
+  </script>
 </body>
 </html>
