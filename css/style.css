@@ -469,7 +469,7 @@ button.smallbtn{cursor:pointer}
 
   width:44px;
   height:44px;
-  border:1px solid var(--line);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   background:transparent;
   display:inline-flex;
   align-items:center;
