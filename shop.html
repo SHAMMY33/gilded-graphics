@@ -17,11 +17,24 @@
 
   <header class="nav">
     <a class="brand" href="index.html">GILDED</a>
-    <nav class="links">
-      <a class="active" href="shop.html">Shop</a>
-      <a href="work.html">Work</a>
-      <a class="btn" href="order.html">Start an Order</a>
-    </nav>
+   <nav class="links">
+  <a class="active" href="shop.html">Shop</a>
+  <a href="work.html">Work</a>
+
+  <!-- Cart icon (between Work and Start an Order) -->
+  <button class="iconbtn" id="openCartBtn" type="button" aria-label="Open cart">
+    <img
+      id="cartIcon"
+      src="assets/images/cart-empty.png"
+      data-empty="assets/images/cart-empty.png"
+      data-full="assets/images/cart-full.png"
+      alt=""
+    />
+  </button>
+
+  <a class="btn" href="order.html">Start an Order</a>
+</nav>
+
   </header>
 
   <main class="wrap">
