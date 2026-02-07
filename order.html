@@ -108,7 +108,7 @@
     </footer>
   </main>
 
-    <!-- Backdrop -->
+  <!-- Backdrop -->
   <div class="cart-backdrop" id="cartBackdrop" hidden></div>
 
   <!-- Cart Drawer -->
@@ -137,6 +137,65 @@
   <script src="assets/products.js?v=1"></script>
 
   <script>
+
+// --- Product page: Add to Cart wiring ---
+(() => {
+  const addBtn = byId("addBtn");
+  if (!addBtn) return;
+
+  const card = addBtn.closest(".card");
+  const sku = card?.dataset?.sku;
+
+  addBtn.addEventListener("click", () => {
+    if (!window.Cart) return toast("Cart failed to load");
+    if (!sku) return toast("Missing product SKU on page");
+
+    const qty = Math.max(1, parseInt(byId("qty")?.value || "1", 10) || 1);
+    const size = byId("size")?.value || "";
+    const color = byId("color")?.value || "";
+
+    window.Cart.add(sku, qty, { size, color });
+
+    updateCartIcon();
+    window.dispatchEvent(new Event("gilded:cart-changed"));
+    toast(`Added: ${qty} • ${size} • ${color}`);
+  });
+})();
+
+    // --- Product page: simple gallery (arrows + thumbnails) ---
+(() => {
+  const mainImg = byId("mainImg");
+  const thumbs = Array.from(document.querySelectorAll("#thumbRow [data-img]"));
+  const prev = byId("gPrev");
+  const next = byId("gNext");
+
+  if (!mainImg || !thumbs.length) return;
+
+  const images = thumbs.map(b => b.getAttribute("data-img")).filter(Boolean);
+  let i = Math.max(0, images.indexOf(mainImg.getAttribute("src")));
+
+  function setIndex(nextIndex){
+    i = (nextIndex + images.length) % images.length;
+    mainImg.src = images[i];
+
+    // optional: simple active border
+    thumbs.forEach((b, idx) => {
+      b.style.outline = (idx === i) ? "" : "none";
+    });
+  }
+
+  thumbs.forEach((b, idx) => {
+    b.addEventListener("click", () => setIndex(idx));
+  });
+
+  prev?.addEventListener("click", () => setIndex(i - 1));
+  next?.addEventListener("click", () => setIndex(i + 1));
+
+  // init highlight
+  setIndex(i);
+})();
+
+    
     function toast(msg) {
       const t = document.createElement("div");
       t.textContent = msg;
@@ -240,7 +299,11 @@
         row.innerHTML = `
           <div class="cart-left">
             <span class="cart-title">${product ? product.name : item.sku}</span>
-            <span class="cart-price">${product ? money(product.price) : ""} • Qty</span>
+            <span class="cart-price">
+              ${product ? money(product.price) : ""}
+              ${item.meta?.size || item.meta?.color ? ` • ${item.meta.size || ""}${item.meta.color ? " / " + item.meta.color : ""}` : ""}
+              • Qty
+            </span>
           </div>
 
           <div class="cart-right">
@@ -252,20 +315,21 @@
         const qtyInput = row.querySelector("input.qty");
         const removeBtn = row.querySelector("button[aria-label='Remove']");
 
-        qtyInput.addEventListener("change", () => {
-          const next = parseInt(qtyInput.value, 10);
-          window.Cart.setQty(item.sku, Number.isFinite(next) ? next : (Number(item.qty) || 1));
-          updateCartIcon();
-          renderCart();
-          window.dispatchEvent(new Event("gilded:cart-changed"));
-        });
+          qtyInput.addEventListener("change", () => {
+            const next = parseInt(qtyInput.value, 10);
+            window.Cart.setQty(item.key || item.sku, Number.isFinite(next) ? next : (Number(item.qty) || 1));
+            updateCartIcon();
+            renderCart();
+            window.dispatchEvent(new Event("gilded:cart-changed"));
+          });
+          
+          removeBtn.addEventListener("click", () => {
+            window.Cart.remove(item.key || item.sku);
+            updateCartIcon();
+            renderCart();
+            window.dispatchEvent(new Event("gilded:cart-changed"));
+          });
 
-        removeBtn.addEventListener("click", () => {
-          window.Cart.remove(item.sku);
-          updateCartIcon();
-          renderCart();
-          window.dispatchEvent(new Event("gilded:cart-changed"));
-        });
 
         itemsEl.appendChild(row);
       });
@@ -353,6 +417,5 @@
       if (drawer && !drawer.hidden) renderCart();
     });
   </script>
-  
 </body>
 </html>
