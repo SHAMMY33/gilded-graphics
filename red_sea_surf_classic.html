@@ -66,44 +66,48 @@
 
       <!-- thumbnails (ONE thumbRow only) -->
       <div id="thumbRow"
-        style="display:flex; gap:10px; margin-top:12px; overflow:auto; padding-bottom:4px; justify-content:center;">
+  style="
+    display:grid;
+    grid-template-columns: repeat(6, 64px);
+    gap:10px;
+    margin-top:12px;
+    justify-content:center;
+    overflow-x:auto;
+    padding: 0 0 8px;
+    scroll-snap-type:x mandatory;
+  ">
 
-        <button type="button" data-img="assets/images/products/red_sea001.jpg"
-          style="border:1px solid rgba(0,0,0,.12); padding:0; width:72px; min-width:72px; height:72px; overflow:hidden; border-radius:12px; background:#fff; cursor:pointer;">
-          <img src="assets/images/products/red_sea001.jpg" alt=""
-            style="width:100%;height:100%;object-fit:cover;display:block;">
-        </button>
+  <button type="button" data-img="assets/images/products/red_sea001.jpg"
+    style="width:64px;height:64px;border:1px solid rgba(0,0,0,.12);border-radius:12px;background:#fff;padding:0;overflow:hidden;cursor:pointer;scroll-snap-align:start;">
+    <img src="assets/images/products/red_sea001.jpg" alt="" style="width:100%;height:100%;object-fit:cover;display:block;">
+  </button>
 
-        <button type="button" data-img="assets/images/products/red_sea002.jpg"
-          style="border:1px solid rgba(0,0,0,.12); padding:0; width:72px; min-width:72px; height:72px; overflow:hidden; border-radius:12px; background:#fff; cursor:pointer;">
-          <img src="assets/images/products/red_sea002.jpg" alt=""
-            style="width:100%;height:100%;object-fit:cover;display:block;">
-        </button>
+  <button type="button" data-img="assets/images/products/red_sea002.jpg"
+    style="width:64px;height:64px;border:1px solid rgba(0,0,0,.12);border-radius:12px;background:#fff;padding:0;overflow:hidden;cursor:pointer;scroll-snap-align:start;">
+    <img src="assets/images/products/red_sea002.jpg" alt="" style="width:100%;height:100%;object-fit:cover;display:block;">
+  </button>
 
-        <button type="button" data-img="assets/images/products/red_sea003.jpg"
-          style="border:1px solid rgba(0,0,0,.12); padding:0; width:72px; min-width:72px; height:72px; overflow:hidden; border-radius:12px; background:#fff; cursor:pointer;">
-          <img src="assets/images/products/red_sea003.jpg" alt=""
-            style="width:100%;height:100%;object-fit:cover;display:block;">
-        </button>
+  <button type="button" data-img="assets/images/products/red_sea003.jpg"
+    style="width:64px;height:64px;border:1px solid rgba(0,0,0,.12);border-radius:12px;background:#fff;padding:0;overflow:hidden;cursor:pointer;scroll-snap-align:start;">
+    <img src="assets/images/products/red_sea003.jpg" alt="" style="width:100%;height:100%;object-fit:cover;display:block;">
+  </button>
 
-        <button type="button" data-img="assets/images/products/red_sea004.jpg"
-          style="border:1px solid rgba(0,0,0,.12); padding:0; width:72px; min-width:72px; height:72px; overflow:hidden; border-radius:12px; background:#fff; cursor:pointer;">
-          <img src="assets/images/products/red_sea004.jpg" alt=""
-            style="width:100%;height:100%;object-fit:cover;display:block;">
-        </button>
+  <button type="button" data-img="assets/images/products/red_sea004.jpg"
+    style="width:64px;height:64px;border:1px solid rgba(0,0,0,.12);border-radius:12px;background:#fff;padding:0;overflow:hidden;cursor:pointer;scroll-snap-align:start;">
+    <img src="assets/images/products/red_sea004.jpg" alt="" style="width:100%;height:100%;object-fit:cover;display:block;">
+  </button>
 
-        <button type="button" data-img="assets/images/products/red_sea005.jpg"
-          style="border:1px solid rgba(0,0,0,.12); padding:0; width:72px; min-width:72px; height:72px; overflow:hidden; border-radius:12px; background:#fff; cursor:pointer;">
-          <img src="assets/images/products/red_sea005.jpg" alt=""
-            style="width:100%;height:100%;object-fit:cover;display:block;">
-        </button>
+  <button type="button" data-img="assets/images/products/red_sea005.jpg"
+    style="width:64px;height:64px;border:1px solid rgba(0,0,0,.12);border-radius:12px;background:#fff;padding:0;overflow:hidden;cursor:pointer;scroll-snap-align:start;">
+    <img src="assets/images/products/red_sea005.jpg" alt="" style="width:100%;height:100%;object-fit:cover;display:block;">
+  </button>
 
-        <button type="button" data-img="assets/images/products/red_sea006.jpg"
-          style="border:1px solid rgba(0,0,0,.12); padding:0; width:72px; min-width:72px; height:72px; overflow:hidden; border-radius:12px; background:#fff; cursor:pointer;">
-          <img src="assets/images/products/red_sea006.jpg" alt=""
-            style="width:100%;height:100%;object-fit:cover;display:block;">
-        </button>
-      </div>
+  <button type="button" data-img="assets/images/products/red_sea006.jpg"
+    style="width:64px;height:64px;border:1px solid rgba(0,0,0,.12);border-radius:12px;background:#fff;padding:0;overflow:hidden;cursor:pointer;scroll-snap-align:start;">
+    <img src="assets/images/products/red_sea006.jpg" alt="" style="width:100%;height:100%;object-fit:cover;display:block;">
+  </button>
+</div>
+
     </div>
 
     <!-- RIGHT: Options -->
