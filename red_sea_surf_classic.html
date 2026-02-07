@@ -342,7 +342,11 @@
         row.innerHTML = `
           <div class="cart-left">
             <span class="cart-title">${product ? product.name : item.sku}</span>
-            <span class="cart-price">${product ? money(product.price) : ""} • Qty</span>
+            <span class="cart-price">
+              ${product ? money(product.price) : ""}
+              ${item.meta?.size || item.meta?.color ? ` • ${item.meta.size || ""}${item.meta.color ? " / " + item.meta.color : ""}` : ""}
+              • Qty
+            </span>
           </div>
 
           <div class="cart-right">
@@ -354,20 +358,21 @@
         const qtyInput = row.querySelector("input.qty");
         const removeBtn = row.querySelector("button[aria-label='Remove']");
 
-        qtyInput.addEventListener("change", () => {
-          const next = parseInt(qtyInput.value, 10);
-          window.Cart.setQty(item.sku, Number.isFinite(next) ? next : (Number(item.qty) || 1));
-          updateCartIcon();
-          renderCart();
-          window.dispatchEvent(new Event("gilded:cart-changed"));
-        });
+          qtyInput.addEventListener("change", () => {
+            const next = parseInt(qtyInput.value, 10);
+            window.Cart.setQty(item.key || item.sku, Number.isFinite(next) ? next : (Number(item.qty) || 1));
+            updateCartIcon();
+            renderCart();
+            window.dispatchEvent(new Event("gilded:cart-changed"));
+          });
+          
+          removeBtn.addEventListener("click", () => {
+            window.Cart.remove(item.key || item.sku);
+            updateCartIcon();
+            renderCart();
+            window.dispatchEvent(new Event("gilded:cart-changed"));
+          });
 
-        removeBtn.addEventListener("click", () => {
-          window.Cart.remove(item.sku);
-          updateCartIcon();
-          renderCart();
-          window.dispatchEvent(new Event("gilded:cart-changed"));
-        });
 
         itemsEl.appendChild(row);
       });
