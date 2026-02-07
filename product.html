@@ -1,0 +1,239 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Product • Gilded Graphics</title>
+  <link rel="stylesheet" href="css/style.css?v=5" />
+</head>
+
+<body>
+  <div class="bar">
+    <span>DTF PRINT • DESIGN • FAST TURNAROUNDS</span>
+    <span class="dot">•</span>
+    <span>FREE LOCAL SHIPPING</span>
+  </div>
+
+  <header class="nav">
+    <a class="brand" href="index.html">GILDED</a>
+
+    <nav class="links">
+      <a href="shop.html">Shop</a>
+      <a href="work.html">Work</a>
+
+      <!-- Cart icon -->
+      <button class="iconbtn" id="openCartBtn" type="button" aria-label="Open cart">
+        <img id="cartIcon" src="assets/images/shopping-bag-empty.png" alt="Cart" />
+        <span id="cartCount" class="badge" aria-label="Cart item count">0</span>
+      </button>
+
+      <a class="btn" href="order.html">Start an Order</a>
+    </nav>
+  </header>
+
+  <main class="wrap">
+    <section class="pagehead">
+      <h1 id="pName">Product</h1>
+      <p class="muted" id="pDesc"></p>
+    </section>
+
+    <section class="grid-2" style="margin-top:14px;">
+      <div class="p-card">
+        <div class="p-img" style="aspect-ratio: 4 / 3;">
+          <img id="pImage" alt="" style="width:100%;height:100%;object-fit:cover;display:block;" />
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="price" id="pPrice">$0.00</div>
+
+        <div class="row">
+          <label for="size">Size</label>
+          <select id="size"></select>
+        </div>
+
+        <div class="row">
+          <label for="color">Color</label>
+          <select id="color"></select>
+        </div>
+
+        <div class="row">
+          <label for="qty">Quantity</label>
+          <input id="qty" type="number" min="1" value="1" />
+        </div>
+
+        <div style="display:flex; gap:10px; flex-wrap:wrap;">
+          <button class="btn" id="addBtn" type="button">Add to cart</button>
+          <a class="smallbtn" href="shop.html">Back to Shop</a>
+        </div>
+
+        <p class="notice">Size/color do not change price. Price is set by product type.</p>
+      </div>
+    </section>
+  </main>
+
+  <!-- Cart drawer (same as shop; optional to include, but recommended for consistency) -->
+  <div class="cart-backdrop" id="cartBackdrop" hidden></div>
+  <aside class="cart" id="cartDrawer" hidden aria-label="Cart drawer">
+    <div class="cart-top">
+      <h2>Your Cart</h2>
+      <button class="smallbtn" id="closeCartBtn" type="button">Close</button>
+    </div>
+    <div class="cart-items" id="cartItems"></div>
+    <div class="cart-actions">
+      <a class="btn full" href="shop.html">Checkout from Shop</a>
+      <button class="smallbtn" id="clearCartBtn" type="button">Clear cart</button>
+    </div>
+    <p class="notice">Checkout happens from Shop for now.</p>
+  </aside>
+
+  <script src="assets/cart.js?v=5"></script>
+  <script src="assets/products.js?v=5"></script>
+
+  <script>
+    function toast(msg) {
+      const t = document.createElement("div");
+      t.textContent = msg;
+      t.style.position = "fixed";
+      t.style.right = "18px";
+      t.style.bottom = "18px";
+      t.style.padding = "10px 12px";
+      t.style.border = "1px solid rgba(0,0,0,.15)";
+      t.style.background = "#fff";
+      t.style.fontWeight = "800";
+      t.style.zIndex = "9999";
+      document.body.appendChild(t);
+      setTimeout(() => t.remove(), 1400);
+    }
+
+    function byId(id){ return document.getElementById(id); }
+
+    function updateCartIconAndBadge() {
+      if (!window.Cart) return;
+      const n = window.Cart.count();
+      byId("cartCount").textContent = String(n);
+      byId("cartIcon").src = n > 0
+        ? "assets/images/shopping-bag-full.png"
+        : "assets/images/shopping-bag-empty.png";
+    }
+
+    // --- Find SKU from URL: product.html?sku=red_sea_surf_classic
+    const params = new URLSearchParams(location.search);
+    const sku = params.get("sku");
+
+    const catalog = window.PRODUCTS || [];
+    const p = catalog.find(x => x.sku === sku);
+
+    if (!p) {
+      byId("pName").textContent = "Product not found";
+      byId("pDesc").textContent = "Go back to the shop and try again.";
+    } else {
+      byId("pName").textContent = p.name;
+      byId("pDesc").textContent = p.desc || "";
+      byId("pPrice").textContent = `$${Number(p.price).toFixed(2)}`;
+
+      const img = byId("pImage");
+      img.src = p.image || "";
+      img.alt = p.name;
+
+      // You control size/color lists here per product.
+      // If you want different options per product later, put arrays on each product object.
+      const sizes = p.sizes || ["XS","S","M","L","XL","2XL"];
+      const colors = p.colors || ["Black","White","Gray","Navy"];
+
+      byId("size").innerHTML = sizes.map(s => `<option value="${s}">${s}</option>`).join("");
+      byId("color").innerHTML = colors.map(c => `<option value="${c}">${c}</option>`).join("");
+
+      byId("addBtn").addEventListener("click", () => {
+        const size = byId("size").value;
+        const color = byId("color").value;
+        const qty = parseInt(byId("qty").value, 10) || 1;
+
+        window.Cart.add(p.sku, qty, { size, color });
+        updateCartIconAndBadge();
+        toast("Added to cart");
+      });
+    }
+
+    // Simple cart drawer (shows options too)
+    const drawer = byId("cartDrawer");
+    const backdrop = byId("cartBackdrop");
+    const cartItemsEl = byId("cartItems");
+
+    function renderCart() {
+      if (!window.Cart) return;
+      const items = window.Cart.read();
+      cartItemsEl.innerHTML = "";
+
+      if (!items.length) {
+        cartItemsEl.innerHTML = "<p class='muted'>Your cart is empty.</p>";
+        return;
+      }
+
+      items.forEach(item => {
+        const prod = catalog.find(x => x.sku === item.sku);
+        const opts = item.options || {};
+
+        const row = document.createElement("div");
+        row.className = "cart-item";
+        row.innerHTML = `
+          <div class="cart-left">
+            <span class="cart-title">${prod ? prod.name : item.sku}</span>
+            <span class="cart-price">
+              ${opts.size ? `Size: ${opts.size}` : ""}${opts.size && opts.color ? " • " : ""}${opts.color ? `Color: ${opts.color}` : ""}
+              ${prod ? ` • $${Number(prod.price).toFixed(2)}` : ""}
+            </span>
+          </div>
+          <div class="cart-right">
+            <input class="qty" type="number" min="1" value="${Number(item.qty) || 1}" />
+            <button class="smallbtn" type="button" aria-label="Remove">✕</button>
+          </div>
+        `;
+
+        row.querySelector("input.qty").addEventListener("change", (e) => {
+          const next = parseInt(e.target.value, 10);
+          window.Cart.setQty(item.key, Number.isFinite(next) ? next : item.qty);
+          updateCartIconAndBadge();
+          renderCart();
+        });
+
+        row.querySelector("button[aria-label='Remove']").addEventListener("click", () => {
+          window.Cart.remove(item.key);
+          updateCartIconAndBadge();
+          renderCart();
+        });
+
+        cartItemsEl.appendChild(row);
+      });
+    }
+
+    function openCart() {
+      drawer.hidden = false;
+      backdrop.hidden = false;
+      drawer.classList.add("is-open");
+      updateCartIconAndBadge();
+      renderCart();
+    }
+
+    function closeCart() {
+      drawer.classList.remove("is-open");
+      setTimeout(() => {
+        drawer.hidden = true;
+        backdrop.hidden = true;
+      }, 180);
+    }
+
+    byId("openCartBtn").addEventListener("click", openCart);
+    byId("closeCartBtn").addEventListener("click", closeCart);
+    backdrop.addEventListener("click", closeCart);
+
+    byId("clearCartBtn").addEventListener("click", () => {
+      window.Cart.clear();
+      updateCartIconAndBadge();
+      renderCart();
+    });
+
+    updateCartIconAndBadge();
+  </script>
+</body>
+</html>
