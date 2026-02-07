@@ -1,17 +1,5 @@
-/* assets/cart.js
-   Shared cart storage + tiny UI helpers (works across all pages)
-*/
 (function () {
   const KEY = "gilded_cart_v1";
-
-  // OPTIONAL: if you want to show a count badge on the bag icon
-  const DEFAULT_BADGE_ID = "cartCount";
-
-  // OPTIONAL: if you want the bag to switch empty/full automatically
-  // Put an <img id="cartIcon"> in your header and this will swap it.
-  const DEFAULT_ICON_ID = "cartIcon";
-  const ICON_EMPTY = "assets/images/shopping-bag-empty.png";
-  const ICON_FULL  = "assets/images/shopping-bag-full.png";
 
   function read() {
     try {
@@ -32,97 +20,79 @@
     return Math.floor(n);
   }
 
-  function add(sku, qty = 1) {
+  function normOptions(options) {
+    const o = options && typeof options === "object" ? options : {};
+    // Only keep the fields we care about (and keep them as strings)
+    return {
+      size: (o.size ?? "").toString(),
+      color: (o.color ?? "").toString(),
+    };
+  }
+
+  // This makes "same sku but different size/color" become different cart lines
+  function lineKey(sku, options) {
+    const o = normOptions(options);
+    return `${sku}__size:${o.size}__color:${o.color}`;
+  }
+
+  function add(sku, qty = 1, options = {}) {
     if (!sku) return;
 
     const addQty = normQty(qty);
     if (addQty <= 0) return;
 
     const items = read();
-    const found = items.find(i => i.sku === sku);
+    const opts = normOptions(options);
+    const key = lineKey(sku, opts);
 
-    if (found) found.qty = normQty(found.qty) + addQty;
-    else items.push({ sku, qty: addQty });
+    const found = items.find(i => i.key === key);
+    if (found) {
+      found.qty = normQty(found.qty) + addQty;
+    } else {
+      items.push({ key, sku, qty: addQty, options: opts });
+    }
 
     write(items);
-    notify();
   }
 
-  function remove(sku) {
-    write(read().filter(i => i.sku !== sku));
-    notify();
+  function remove(keyOrSku, options = null) {
+    // Back-compat: if options provided, remove that specific line
+    if (options) {
+      const key = lineKey(keyOrSku, options);
+      write(read().filter(i => i.key !== key));
+      return;
+    }
+    // Otherwise treat first argument as key
+    write(read().filter(i => i.key !== keyOrSku));
   }
 
-  function setQty(sku, qty) {
+  function setQty(key, qty) {
     const items = read();
-    const item = items.find(i => i.sku === sku);
+    const item = items.find(i => i.key === key);
     if (!item) return;
 
     const n = normQty(qty);
     if (n <= 0) {
-      write(items.filter(i => i.sku !== sku));
-    } else {
-      item.qty = n;
-      write(items);
+      remove(key);
+      return;
     }
-    notify();
+
+    item.qty = n;
+    write(items);
   }
 
   function clear() {
     write([]);
-    notify();
   }
 
   function count() {
     return read().reduce((sum, i) => sum + (normQty(i.qty) || 0), 0);
   }
 
-  // --- UI helpers (safe if elements don't exist)
-
-  function syncBadge(id = DEFAULT_BADGE_ID) {
+  function syncBadge(id = "cartCount") {
     const el = document.getElementById(id);
     if (el) el.textContent = String(count());
   }
 
-  function syncIcon(id = DEFAULT_ICON_ID) {
-    const img = document.getElementById(id);
-    if (!img) return;
-
-    // only swap if it's our bag icons (avoid breaking other images)
-    const c = count();
-    img.src = c > 0 ? ICON_FULL : ICON_EMPTY;
-    img.alt = c > 0 ? "Cart (items)" : "Cart";
-  }
-
-  // Emit a lightweight event so any page can re-render drawer UI
-  function notify() {
-    try {
-      syncBadge();
-      syncIcon();
-      window.dispatchEvent(new CustomEvent("gilded:cart-changed", { detail: { count: count() } }));
-    } catch {
-      // no-op
-    }
-  }
-
-  // Keep multiple tabs in sync
-  window.addEventListener("storage", (e) => {
-    if (e.key === KEY) notify();
-  });
-
-  // Expose globally
-  window.Cart = {
-    read,
-    add,
-    remove,
-    setQty,
-    clear,
-    count,
-    syncBadge,
-    syncIcon,
-    notify
-  };
-
-  // Initial sync on load
-  notify();
+  window.Cart = { read, add, remove, setQty, clear, count, syncBadge };
 })();
