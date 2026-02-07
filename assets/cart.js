@@ -4,11 +4,7 @@
 (function () {
   const KEY = "gilded_cart_v1";
 
-  // OPTIONAL: if you want to show a count badge on the bag icon
   const DEFAULT_BADGE_ID = "cartCount";
-
-  // OPTIONAL: if you want the bag to switch empty/full automatically
-  // Put an <img id="cartIcon"> in your header and this will swap it.
   const DEFAULT_ICON_ID = "cartIcon";
   const ICON_EMPTY = "assets/images/shopping-bag-empty.png";
   const ICON_FULL  = "assets/images/shopping-bag-full.png";
@@ -32,35 +28,62 @@
     return Math.floor(n);
   }
 
-  function add(sku, qty = 1) {
+  // Variants -> unique line item key
+  function makeKey(sku, meta) {
+    const size = meta?.size ? String(meta.size) : "";
+    const color = meta?.color ? String(meta.color) : "";
+    return `${sku}__size:${size}__color:${color}`;
+  }
+
+  // Backwards compatible:
+  // add(sku, qty)
+  // add(sku, qty, {size,color})
+  function add(sku, qty = 1, meta = {}) {
     if (!sku) return;
 
     const addQty = normQty(qty);
     if (addQty <= 0) return;
 
     const items = read();
-    const found = items.find(i => i.sku === sku);
 
-    if (found) found.qty = normQty(found.qty) + addQty;
-    else items.push({ sku, qty: addQty });
+    const safeMeta = {
+      size: meta?.size ? String(meta.size) : "",
+      color: meta?.color ? String(meta.color) : ""
+    };
+
+    const key = makeKey(sku, safeMeta);
+
+    // If old items exist without key/meta, upgrade happens naturally on next write
+    const found = items.find(i => (i.key && i.key === key) || (!i.key && i.sku === sku && !safeMeta.size && !safeMeta.color));
+
+    if (found) {
+      found.qty = normQty(found.qty) + addQty;
+      found.sku = sku;
+      found.key = found.key || key;
+      found.meta = found.meta || safeMeta;
+    } else {
+      items.push({ key, sku, qty: addQty, meta: safeMeta });
+    }
 
     write(items);
     notify();
   }
 
-  function remove(sku) {
-    write(read().filter(i => i.sku !== sku));
+  // remove by key OR sku
+  function remove(id) {
+    write(read().filter(i => i.key !== id && i.sku !== id));
     notify();
   }
 
-  function setQty(sku, qty) {
+  // setQty by key OR sku
+  function setQty(id, qty) {
     const items = read();
-    const item = items.find(i => i.sku === sku);
+    const item = items.find(i => i.key === id || i.sku === id);
     if (!item) return;
 
     const n = normQty(qty);
     if (n <= 0) {
-      write(items.filter(i => i.sku !== sku));
+      write(items.filter(i => i !== item));
     } else {
       item.qty = n;
       write(items);
@@ -88,13 +111,11 @@
     const img = document.getElementById(id);
     if (!img) return;
 
-    // only swap if it's our bag icons (avoid breaking other images)
     const c = count();
     img.src = c > 0 ? ICON_FULL : ICON_EMPTY;
     img.alt = c > 0 ? "Cart (items)" : "Cart";
   }
 
-  // Emit a lightweight event so any page can re-render drawer UI
   function notify() {
     try {
       syncBadge();
@@ -105,12 +126,10 @@
     }
   }
 
-  // Keep multiple tabs in sync
   window.addEventListener("storage", (e) => {
     if (e.key === KEY) notify();
   });
 
-  // Expose globally
   window.Cart = {
     read,
     add,
@@ -123,6 +142,5 @@
     notify
   };
 
-  // Initial sync on load
   notify();
 })();
