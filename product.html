@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Start an Order • Gilded Graphics</title>
-  <meta name="description" content="Order apparel printing or design work." />
+  <title>Gilded Graphics</title>
+  <meta name="description" content="Bold design + DTF printing. Apparel, logos, and graphics that actually hit." />
   <link rel="stylesheet" href="css/style.css?v=3" />
 </head>
 <body>
@@ -16,11 +16,12 @@
 
   <header class="nav">
     <a class="brand" href="index.html">GILDED</a>
-   <nav class="links">
-  <a class="active" href="shop.html">Shop</a>
-  <a href="work.html">Work</a>
 
- <!-- Cart icon -->
+    <nav class="links">
+      <a href="shop.html">Shop</a>
+      <a href="work.html">Work</a>
+
+  <!-- Cart icon -->
       <button class="iconbtn" id="openCartBtn" type="button" aria-label="Open cart">
         <img
           id="cartIcon"
@@ -30,12 +31,11 @@
           alt=""
         />
       </button>
-
-</nav>
-
+      
+    </nav>
   </header>
 
-  <main class="wrap">
+ <main class="wrap">
     <section class="pagehead">
       <h1 id="pName">Product</h1>
       <p class="muted" id="pDesc"></p>
@@ -75,6 +75,28 @@
       </div>
     </section>
   </main>
+
+  <!-- Backdrop -->
+  <div class="cart-backdrop" id="cartBackdrop" hidden></div>
+
+  <!-- Cart Drawer -->
+  <aside class="cart" id="cartDrawer" hidden>
+    <div class="cart-top">
+      <h2>Your Cart</h2>
+      <button class="smallbtn" id="closeCartBtn" type="button">Close</button>
+    </div>
+
+    <div class="cart-items" id="cartItems"></div>
+
+    <div class="cart-actions">
+      <button class="btn full" id="checkoutBtn" type="button">Checkout</button>
+      <button class="smallbtn" id="clearCartBtn" type="button">Clear cart</button>
+    </div>
+
+    <p class="notice">
+      Add items on the Shop page. Cart persists across pages.
+    </p>
+  </aside>
 
   <!-- Cart storage -->
   <script src="assets/cart.js?v=4"></script>
