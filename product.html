@@ -76,23 +76,11 @@
     </section>
   </main>
 
-  <!-- Cart drawer (same as shop; optional to include, but recommended for consistency) -->
-  <div class="cart-backdrop" id="cartBackdrop" hidden></div>
-  <aside class="cart" id="cartDrawer" hidden aria-label="Cart drawer">
-    <div class="cart-top">
-      <h2>Your Cart</h2>
-      <button class="smallbtn" id="closeCartBtn" type="button">Close</button>
-    </div>
-    <div class="cart-items" id="cartItems"></div>
-    <div class="cart-actions">
-      <a class="btn full" href="shop.html">Checkout from Shop</a>
-      <button class="smallbtn" id="clearCartBtn" type="button">Clear cart</button>
-    </div>
-    <p class="notice">Checkout happens from Shop for now.</p>
-  </aside>
+  <!-- Cart storage -->
+  <script src="assets/cart.js?v=4"></script>
 
-  <script src="assets/cart.js?v=5"></script>
-  <script src="assets/products.js?v=5"></script>
+  <!-- Shared product catalog (MUST exist) -->
+  <script src="assets/products.js?v=1"></script>
 
   <script>
     function toast(msg) {
@@ -111,115 +99,137 @@
     }
 
     function byId(id){ return document.getElementById(id); }
+    function money(n){ return "$" + Number(n || 0).toFixed(2); }
 
-    function updateCartIconAndBadge() {
-      if (!window.Cart) return;
-      const n = window.Cart.count();
-      byId("cartCount").textContent = String(n);
-      byId("cartIcon").src = n > 0
-        ? "assets/images/shopping-bag-full.png"
-        : "assets/images/shopping-bag-empty.png";
+    function getCatalog(){
+      return Array.isArray(window.PRODUCTS) ? window.PRODUCTS : [];
     }
 
-    // --- Find SKU from URL: product.html?sku=red_sea_surf_classic
-    const params = new URLSearchParams(location.search);
-    const sku = params.get("sku");
+    function updateCartIcon() {
+      const icon = byId("cartIcon");
+      if (!icon || !window.Cart) return;
 
-    const catalog = window.PRODUCTS || [];
-    const p = catalog.find(x => x.sku === sku);
+      const n = window.Cart.count();
+      icon.src = n > 0 ? icon.dataset.full : icon.dataset.empty;
+    }
 
-    if (!p) {
-      byId("pName").textContent = "Product not found";
-      byId("pDesc").textContent = "Go back to the shop and try again.";
-    } else {
-      byId("pName").textContent = p.name;
-      byId("pDesc").textContent = p.desc || "";
-      byId("pPrice").textContent = `$${Number(p.price).toFixed(2)}`;
+    function renderProducts() {
+      const grid = byId("productGrid");
+      if (!grid) return;
 
-      const img = byId("pImage");
-      img.src = p.image || "";
-      img.alt = p.name;
+      const PRODUCTS = getCatalog();
 
-      // You control size/color lists here per product.
-      // If you want different options per product later, put arrays on each product object.
-      const sizes = p.sizes || ["XS","S","M","L","XL","2XL"];
-      const colors = p.colors || ["Black","White","Gray","Navy"];
+      if (!PRODUCTS.length) {
+        grid.innerHTML = "<p class='muted'>No products yet. Add them in assets/products.js</p>";
+        return;
+      }
 
-      byId("size").innerHTML = sizes.map(s => `<option value="${s}">${s}</option>`).join("");
-      byId("color").innerHTML = colors.map(c => `<option value="${c}">${c}</option>`).join("");
+      grid.innerHTML = PRODUCTS.map(p => `
+        <article class="p-card">
+          <div class="p-img">
+            ${p.image ? `<img src="${p.image}" alt="${p.name}" onerror="this.remove()">` : ``}
 
-      byId("addBtn").addEventListener("click", () => {
-        const size = byId("size").value;
-        const color = byId("color").value;
-        const qty = parseInt(byId("qty").value, 10) || 1;
+            <!-- Add-to-cart bag (BOTTOM-RGHT) -->
+            <button class="add-bag" type="button" data-sku="${p.sku}" aria-label="Add ${p.name} to cart">
+              <img src="assets/images/shopping-bag-full.png" alt="" aria-hidden="true">
+            </button>
+          </div>
 
-        window.Cart.add(p.sku, qty, { size, color });
-        updateCartIconAndBadge();
-        toast("Added to cart");
+          <div class="p-body">
+            <div class="p-top">
+              <h3>${p.name}</h3>
+              ${p.tag ? `<span class="tag">${p.tag}</span>` : ``}
+            </div>
+
+            <div class="price">${money(p.price)}</div>
+
+            <p>${p.desc || ""}</p>
+          </div>
+        </article>
+      `).join("");
+
+      // wire bag buttons
+      grid.querySelectorAll("button.add-bag[data-sku]").forEach(btn => {
+        btn.addEventListener("click", () => {
+          if (!window.Cart) {
+            toast("Cart failed to load");
+            return;
+          }
+          window.Cart.add(btn.getAttribute("data-sku"), 1);
+          updateCartIcon();
+          toast("Added to cart");
+          window.dispatchEvent(new Event("gilded:cart-changed"));
+        });
       });
     }
 
-    // Simple cart drawer (shows options too)
-    const drawer = byId("cartDrawer");
-    const backdrop = byId("cartBackdrop");
-    const cartItemsEl = byId("cartItems");
-
     function renderCart() {
-      if (!window.Cart) return;
+      const itemsEl = byId("cartItems");
+      if (!itemsEl || !window.Cart) return;
+
       const items = window.Cart.read();
-      cartItemsEl.innerHTML = "";
+      const catalog = getCatalog();
+
+      itemsEl.innerHTML = "";
 
       if (!items.length) {
-        cartItemsEl.innerHTML = "<p class='muted'>Your cart is empty.</p>";
+        itemsEl.innerHTML = "<p class='muted'>Your cart is empty.</p>";
         return;
       }
 
       items.forEach(item => {
-        const prod = catalog.find(x => x.sku === item.sku);
-        const opts = item.options || {};
+        const product = catalog.find(p => p.sku === item.sku);
 
         const row = document.createElement("div");
         row.className = "cart-item";
+
         row.innerHTML = `
           <div class="cart-left">
-            <span class="cart-title">${prod ? prod.name : item.sku}</span>
-            <span class="cart-price">
-              ${opts.size ? `Size: ${opts.size}` : ""}${opts.size && opts.color ? " • " : ""}${opts.color ? `Color: ${opts.color}` : ""}
-              ${prod ? ` • $${Number(prod.price).toFixed(2)}` : ""}
-            </span>
+            <span class="cart-title">${product ? product.name : item.sku}</span>
+            <span class="cart-price">${product ? money(product.price) : ""} • Qty</span>
           </div>
+
           <div class="cart-right">
             <input class="qty" type="number" min="1" value="${Number(item.qty) || 1}" />
             <button class="smallbtn" type="button" aria-label="Remove">✕</button>
           </div>
         `;
 
-        row.querySelector("input.qty").addEventListener("change", (e) => {
-          const next = parseInt(e.target.value, 10);
-          window.Cart.setQty(item.key, Number.isFinite(next) ? next : item.qty);
-          updateCartIconAndBadge();
+        const qtyInput = row.querySelector("input.qty");
+        const removeBtn = row.querySelector("button[aria-label='Remove']");
+
+        qtyInput.addEventListener("change", () => {
+          const next = parseInt(qtyInput.value, 10);
+          window.Cart.setQty(item.sku, Number.isFinite(next) ? next : (Number(item.qty) || 1));
+          updateCartIcon();
           renderCart();
+          window.dispatchEvent(new Event("gilded:cart-changed"));
         });
 
-        row.querySelector("button[aria-label='Remove']").addEventListener("click", () => {
-          window.Cart.remove(item.key);
-          updateCartIconAndBadge();
+        removeBtn.addEventListener("click", () => {
+          window.Cart.remove(item.sku);
+          updateCartIcon();
           renderCart();
+          window.dispatchEvent(new Event("gilded:cart-changed"));
         });
 
-        cartItemsEl.appendChild(row);
+        itemsEl.appendChild(row);
       });
     }
 
-    function openCart() {
+    // Drawer controls
+    const drawer = byId("cartDrawer");
+    const backdrop = byId("cartBackdrop");
+
+    function openCart(){
       drawer.hidden = false;
       backdrop.hidden = false;
       drawer.classList.add("is-open");
-      updateCartIconAndBadge();
+      updateCartIcon();
       renderCart();
     }
 
-    function closeCart() {
+    function closeCart(){
       drawer.classList.remove("is-open");
       setTimeout(() => {
         drawer.hidden = true;
@@ -227,17 +237,67 @@
       }, 180);
     }
 
+    // Init
+    renderProducts();
+    updateCartIcon();
+
     byId("openCartBtn").addEventListener("click", openCart);
     byId("closeCartBtn").addEventListener("click", closeCart);
     backdrop.addEventListener("click", closeCart);
 
     byId("clearCartBtn").addEventListener("click", () => {
       window.Cart.clear();
-      updateCartIconAndBadge();
+      updateCartIcon();
       renderCart();
+      window.dispatchEvent(new Event("gilded:cart-changed"));
     });
 
-    updateCartIconAndBadge();
+      // ... keep everything you already have ABOVE this ...
+
+  byId("checkoutBtn")?.addEventListener("click", async () => {
+    if (!window.Cart) return;
+
+    const items = window.Cart.read(); // [{sku, qty}]
+    if (!items.length) {
+      toast("Cart is empty");
+      return;
+    }
+
+    try {
+      const res = await fetch("https://gilded-checkout.vercel.app/api/checkout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ items })
+      });
+
+      if (!res.ok) {
+        const txt = await res.text();
+        console.error("Checkout error:", txt);
+        toast("Checkout failed — see console");
+        return;
+      }
+
+      const data = await res.json();
+      if (!data.url) {
+        console.error("Missing url:", data);
+        toast("Checkout failed — missing URL");
+        return;
+      }
+
+      // send them to Stripe Checkout
+      window.location.href = data.url;
+
+    } catch (err) {
+      console.error(err);
+      toast("Checkout error — network blocked?");
+    }
+  });
+
+    // optional cross-page updates
+    window.addEventListener("gilded:cart-changed", () => {
+      updateCartIcon();
+      if (drawer && !drawer.hidden) renderCart();
+    });
   </script>
 </body>
 </html>
