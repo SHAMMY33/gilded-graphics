@@ -3,10 +3,10 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Product • Gilded Graphics</title>
-  <link rel="stylesheet" href="css/style.css?v=5" />
+  <title>Start an Order • Gilded Graphics</title>
+  <meta name="description" content="Order apparel printing or design work." />
+  <link rel="stylesheet" href="css/style.css?v=3" />
 </head>
-
 <body>
   <div class="bar">
     <span>DTF PRINT • DESIGN • FAST TURNAROUNDS</span>
@@ -16,19 +16,23 @@
 
   <header class="nav">
     <a class="brand" href="index.html">GILDED</a>
+   <nav class="links">
+  <a class="active" href="shop.html">Shop</a>
+  <a href="work.html">Work</a>
 
-    <nav class="links">
-      <a href="shop.html">Shop</a>
-      <a href="work.html">Work</a>
-
-      <!-- Cart icon -->
+ <!-- Cart icon -->
       <button class="iconbtn" id="openCartBtn" type="button" aria-label="Open cart">
-        <img id="cartIcon" src="assets/images/shopping-bag-empty.png" alt="Cart" />
-        <span id="cartCount" class="badge" aria-label="Cart item count">0</span>
+        <img
+          id="cartIcon"
+          src="assets/images/shopping-bag-empty.png"
+          data-empty="assets/images/shopping-bag-empty.png"
+          data-full="assets/images/shopping-bag-full.png"
+          alt=""
+        />
       </button>
 
-      <a class="btn" href="order.html">Start an Order</a>
-    </nav>
+</nav>
+
   </header>
 
   <main class="wrap">
