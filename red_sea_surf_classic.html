@@ -35,56 +35,92 @@
     </nav>
   </header>
 
- <main class="wrap">
-    <section class="pagehead">
-      <h1>Red Sea Surf Classic</h1>
-      <p class="muted">Crew Neck Surf Tee</p>
-    </section>
+<main class="wrap">
+  <section class="pagehead">
+    <h1>Red Sea Surf Classic</h1>
+    <p class="muted">Crew Neck Surf Tee</p>
+  </section>
 
-    <section class="grid-2" style="margin-top:14px;">
-      <div class="p-card">
-        <div class="p-img" style="aspect-ratio: 3 / 4;">
-          <img src="assets/images/products/red_sea001.jpg" alt="" style="width:100%;height:100%;object-fit:cover;display:block;" />
-        </div>
+  <section class="grid-2" style="margin-top:14px;">
+    <!-- LEFT: Gallery -->
+    <div class="p-card">
+      <div class="p-img" style="aspect-ratio: 3 / 4; position:relative;">
+        <!-- arrows -->
+        <button type="button" class="smallbtn" id="gPrev"
+          style="position:absolute;left:10px;top:50%;transform:translateY(-50%);z-index:2;">
+          ‹
+        </button>
+
+        <img
+          id="mainImg"
+          src="assets/images/products/red_sea001.jpg"
+          alt="Red Sea Surf Classic"
+          style="width:100%;height:100%;object-fit:cover;display:block;"
+        />
+
+        <button type="button" class="smallbtn" id="gNext"
+          style="position:absolute;right:10px;top:50%;transform:translateY(-50%);z-index:2;">
+          ›
+        </button>
       </div>
 
-      <div class="card">
+      <!-- thumbnails -->
+      <div id="thumbRow" style="display:flex; gap:10px; margin-top:12px; overflow:auto; padding-bottom:4px;">
+        <button type="button" class="p-card" data-img="assets/images/products/red_sea001.jpg"
+          style="border:1px solid rgba(0,0,0,.10); padding:0; width:72px; min-width:72px; height:72px; overflow:hidden; border-radius:12px; background:#fff;">
+          <img src="assets/images/products/red_sea001.jpg" alt="" style="width:100%;height:100%;object-fit:cover;display:block;">
+        </button>
 
-        <div class="row">
-          <label for="size">Size</label>
-            <select id="size">
-              <option value="S">Small</option>
-              <option value="M">Medium</option>
-              <option value="L">Large</option>
-              <option value="XL">Extra Large</option>
-            </select>
-        </div>
-
-        <div class="row">
-          <label for="color">Color</label>
-            <select id="color">
-              <option value="Natural">Natural</option>
-              <option value="White">White</option>
-              <option value="Soft Pink">Soft Pink</option>
-            </select>
-        </div>
-
-        <div class="price" id="pPrice">$35.00</div>
-        
-        <div class="row">
-          <label for="qty">Quantity</label>
-          <input id="qty" type="number" min="1" value="1" />
-        </div>
-
-        <div style="display:flex; gap:10px; flex-wrap:wrap;">
-          <button class="btn" id="addBtn" type="button">Add to Cart</button>
-          <a class="smallbtn" href="shop.html">Back to Shop</a>
-        </div>
-              
-        <p class="notice">HE WALKED ON WATER • I JUST RIDE THE WAVE</p>
+        <!-- Add more thumbnails by duplicating a button and changing data-img + img src -->
+        <!--
+        <button type="button" class="p-card" data-img="assets/images/products/red_sea002.jpg" style="...same styles...">
+          <img src="assets/images/products/red_sea002.jpg" alt="" style="...">
+        </button>
+        -->
       </div>
-    </section>
-  </main>
+    </div>
+
+    <!-- RIGHT: Options -->
+    <div class="card"
+      data-sku="red_sea_surf_classic"
+      data-name="Red Sea Surf Classic">
+
+      <div class="row">
+        <label for="size">Size</label>
+        <select id="size">
+          <option value="S">Small</option>
+          <option value="M">Medium</option>
+          <option value="L">Large</option>
+          <option value="XL">Extra Large</option>
+        </select>
+      </div>
+
+      <div class="row">
+        <label for="color">Color</label>
+        <select id="color">
+          <option value="Natural">Natural</option>
+          <option value="White">White</option>
+          <option value="Soft Pink">Soft Pink</option>
+        </select>
+      </div>
+
+      <div class="price" id="pPrice">$35.00</div>
+
+      <div class="row">
+        <label for="qty">Quantity</label>
+        <input id="qty" type="number" min="1" value="1" />
+      </div>
+
+      <div style="display:flex; gap:10px; flex-wrap:wrap;">
+        <button class="btn" id="addBtn" type="button">Add to Bag</button>
+        <a class="smallbtn" href="shop.html">Back to Shop</a>
+      </div>
+
+      <p class="notice">HE WALKED ON WATER • I JUST RIDE THE WAVE</p>
+    </div>
+  </section>
+</main>
+
 
   <!-- Backdrop -->
   <div class="cart-backdrop" id="cartBackdrop" hidden></div>
@@ -115,6 +151,76 @@
   <script src="assets/products.js?v=1"></script>
 
   <script>
+
+    // --- Product page: Add to Bag wiring ---
+(() => {
+  const addBtn = byId("addBtn");
+  if (!addBtn) return;
+
+  const card = addBtn.closest(".card");
+  const sku = card?.dataset?.sku;
+
+  addBtn.addEventListener("click", () => {
+    if (!window.Cart) {
+      toast("Cart failed to load");
+      return;
+    }
+    if (!sku) {
+      toast("Missing product SKU on page");
+      return;
+    }
+
+    const qty = Math.max(1, parseInt(byId("qty")?.value || "1", 10) || 1);
+    const size = byId("size")?.value || "";
+    const color = byId("color")?.value || "";
+
+    // Add base item(s)
+    window.Cart.add(sku, qty);
+
+    // If you want to preserve variants without editing cart.js,
+    // we can store them as a NOTE line item (or add metadata support later).
+    // For now, just toast it so user sees it:
+    toast(`Added: ${qty} • ${size} • ${color}`);
+
+    updateCartIcon();
+    window.dispatchEvent(new Event("gilded:cart-changed"));
+  });
+})();
+
+    // --- Product page: simple gallery (arrows + thumbnails) ---
+(() => {
+  const mainImg = byId("mainImg");
+  const thumbs = Array.from(document.querySelectorAll("#thumbRow [data-img]"));
+  const prev = byId("gPrev");
+  const next = byId("gNext");
+
+  if (!mainImg || !thumbs.length) return;
+
+  const images = thumbs.map(b => b.getAttribute("data-img")).filter(Boolean);
+  let i = Math.max(0, images.indexOf(mainImg.getAttribute("src")));
+
+  function setIndex(nextIndex){
+    i = (nextIndex + images.length) % images.length;
+    mainImg.src = images[i];
+
+    // optional: simple active border
+    thumbs.forEach((b, idx) => {
+      b.style.outline = (idx === i) ? "2px solid rgba(17,17,20,.35)" : "none";
+    });
+  }
+
+  thumbs.forEach((b, idx) => {
+    b.addEventListener("click", () => setIndex(idx));
+  });
+
+  prev?.addEventListener("click", () => setIndex(i - 1));
+  next?.addEventListener("click", () => setIndex(i + 1));
+
+  // init highlight
+  setIndex(i);
+})();
+
+    
     function toast(msg) {
       const t = document.createElement("div");
       t.textContent = msg;
