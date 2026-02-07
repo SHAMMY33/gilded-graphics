@@ -232,11 +232,7 @@
     i = (nextIndex + images.length) % images.length;
     mainImg.src = images[i];
 
-    // optional: simple active border
-    thumbs.forEach((b, idx) => {
-      b.style.outline = (idx === i) ? "2px solid rgba(17,17,20,.35)" : "none";
-    });
-  }
+    
 
   thumbs.forEach((b, idx) => {
     b.addEventListener("click", () => setIndex(idx));
