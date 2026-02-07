@@ -34,82 +34,80 @@
       
     </nav>
   </header>
-
 <main class="wrap">
   <section class="pagehead">
     <h1>Red Sea Surf Classic</h1>
     <p class="muted">Crew Neck Surf Tee</p>
   </section>
 
-  <section class="grid-2" style="margin-top:14px;">
+  <section class="grid-2" style="margin-top:14px; align-items:start;">
     <!-- LEFT: Gallery -->
-    <div class="p-card">
-      <div class="p-img" style="aspect-ratio: 3 / 4; position:relative;">
-        <!-- arrows -->
-        <button type="button" class="smallbtn" id="gPrev"
-          style="position:absolute;left:10px;top:50%;transform:translateY(-50%);z-index:2;">
-          ‹
-        </button>
+    <div>
+      <div class="p-card">
+        <div class="p-img" style="aspect-ratio: 3 / 4; position:relative;">
+          <button type="button" class="smallbtn" id="gPrev"
+            style="position:absolute;left:10px;top:50%;transform:translateY(-50%);z-index:2;">
+            ‹
+          </button>
 
-        <img
-          id="mainImg"
-          src="assets/images/products/red_sea001.jpg"
-          alt="Red Sea Surf Classic"
-          style="width:100%;height:100%;object-fit:cover;display:block;"
-        />
+          <img
+            id="mainImg"
+            src="assets/images/products/red_sea001.jpg"
+            alt="Red Sea Surf Classic"
+            style="width:100%;height:100%;object-fit:cover;display:block;"
+          />
 
-        <button type="button" class="smallbtn" id="gNext"
-          style="position:absolute;right:10px;top:50%;transform:translateY(-50%);z-index:2;">
-          ›
-        </button>
+          <button type="button" class="smallbtn" id="gNext"
+            style="position:absolute;right:10px;top:50%;transform:translateY(-50%);z-index:2;">
+            ›
+          </button>
+        </div>
       </div>
 
-      <!-- thumbnails -->
-      <div id="thumbRow" style="display:flex; gap:10px; margin-top:12px; overflow:auto; padding-bottom:4px;">
-        <button type="button" class="p-card" data-img="assets/images/products/red_sea001.jpg"
-          style="border:1px solid rgba(0,0,0,.10); padding:0; width:72px; min-width:72px; height:72px; overflow:hidden; border-radius:12px; background:#fff;">
-          <img src="assets/images/products/red_sea001.jpg" alt="" style="width:100%;height:100%;object-fit:cover;display:block;">
-        </button>
-      <div id="thumbRow" style="display:flex; gap:10px; margin-top:12px; overflow:auto; padding-bottom:4px;">
-        <button type="button" class="p-card" data-img="assets/images/products/red_sea001.jpg"
-          style="border:1px solid rgba(0,0,0,.10); padding:0; width:72px; min-width:72px; height:72px; overflow:hidden; border-radius:12px; background:#fff;">
-          <img src="assets/images/products/red_sea002.jpg" alt="" style="width:100%;height:100%;object-fit:cover;display:block;">
-        </button>
-      <div id="thumbRow" style="display:flex; gap:10px; margin-top:12px; overflow:auto; padding-bottom:4px;">
-        <button type="button" class="p-card" data-img="assets/images/products/red_sea001.jpg"
-          style="border:1px solid rgba(0,0,0,.10); padding:0; width:72px; min-width:72px; height:72px; overflow:hidden; border-radius:12px; background:#fff;">
-          <img src="assets/images/products/red_sea003.jpg" alt="" style="width:100%;height:100%;object-fit:cover;display:block;">
-        </button>
-      <div id="thumbRow" style="display:flex; gap:10px; margin-top:12px; overflow:auto; padding-bottom:4px;">
-        <button type="button" class="p-card" data-img="assets/images/products/red_sea001.jpg"
-          style="border:1px solid rgba(0,0,0,.10); padding:0; width:72px; min-width:72px; height:72px; overflow:hidden; border-radius:12px; background:#fff;">
-          <img src="assets/images/products/red_sea004.jpg" alt="" style="width:100%;height:100%;object-fit:cover;display:block;">
-        </button>
-      <div id="thumbRow" style="display:flex; gap:10px; margin-top:12px; overflow:auto; padding-bottom:4px;">
-        <button type="button" class="p-card" data-img="assets/images/products/red_sea001.jpg"
-          style="border:1px solid rgba(0,0,0,.10); padding:0; width:72px; min-width:72px; height:72px; overflow:hidden; border-radius:12px; background:#fff;">
-          <img src="assets/images/products/red_sea005.jpg" alt="" style="width:100%;height:100%;object-fit:cover;display:block;">
-        </button>
-      <div id="thumbRow" style="display:flex; gap:10px; margin-top:12px; overflow:auto; padding-bottom:4px;">
-        <button type="button" class="p-card" data-img="assets/images/products/red_sea001.jpg"
-          style="border:1px solid rgba(0,0,0,.10); padding:0; width:72px; min-width:72px; height:72px; overflow:hidden; border-radius:12px; background:#fff;">
-          <img src="assets/images/products/red_sea006.jpg" alt="" style="width:100%;height:100%;object-fit:cover;display:block;">
+      <!-- thumbnails (ONE thumbRow only) -->
+      <div id="thumbRow"
+        style="display:flex; gap:10px; margin-top:12px; overflow:auto; padding-bottom:4px; justify-content:center;">
+
+        <button type="button" data-img="assets/images/products/red_sea001.jpg"
+          style="border:1px solid rgba(0,0,0,.12); padding:0; width:72px; min-width:72px; height:72px; overflow:hidden; border-radius:12px; background:#fff; cursor:pointer;">
+          <img src="assets/images/products/red_sea001.jpg" alt=""
+            style="width:100%;height:100%;object-fit:cover;display:block;">
         </button>
 
-        <!-- Add more thumbnails by duplicating a button and changing data-img + img src -->
-        <!--
-        <button type="button" class="p-card" data-img="assets/images/products/red_sea002.jpg" style="...same styles...">
-          <img src="assets/images/products/red_sea002.jpg" alt="" style="...">
+        <button type="button" data-img="assets/images/products/red_sea002.jpg"
+          style="border:1px solid rgba(0,0,0,.12); padding:0; width:72px; min-width:72px; height:72px; overflow:hidden; border-radius:12px; background:#fff; cursor:pointer;">
+          <img src="assets/images/products/red_sea002.jpg" alt=""
+            style="width:100%;height:100%;object-fit:cover;display:block;">
         </button>
-        -->
+
+        <button type="button" data-img="assets/images/products/red_sea003.jpg"
+          style="border:1px solid rgba(0,0,0,.12); padding:0; width:72px; min-width:72px; height:72px; overflow:hidden; border-radius:12px; background:#fff; cursor:pointer;">
+          <img src="assets/images/products/red_sea003.jpg" alt=""
+            style="width:100%;height:100%;object-fit:cover;display:block;">
+        </button>
+
+        <button type="button" data-img="assets/images/products/red_sea004.jpg"
+          style="border:1px solid rgba(0,0,0,.12); padding:0; width:72px; min-width:72px; height:72px; overflow:hidden; border-radius:12px; background:#fff; cursor:pointer;">
+          <img src="assets/images/products/red_sea004.jpg" alt=""
+            style="width:100%;height:100%;object-fit:cover;display:block;">
+        </button>
+
+        <button type="button" data-img="assets/images/products/red_sea005.jpg"
+          style="border:1px solid rgba(0,0,0,.12); padding:0; width:72px; min-width:72px; height:72px; overflow:hidden; border-radius:12px; background:#fff; cursor:pointer;">
+          <img src="assets/images/products/red_sea005.jpg" alt=""
+            style="width:100%;height:100%;object-fit:cover;display:block;">
+        </button>
+
+        <button type="button" data-img="assets/images/products/red_sea006.jpg"
+          style="border:1px solid rgba(0,0,0,.12); padding:0; width:72px; min-width:72px; height:72px; overflow:hidden; border-radius:12px; background:#fff; cursor:pointer;">
+          <img src="assets/images/products/red_sea006.jpg" alt=""
+            style="width:100%;height:100%;object-fit:cover;display:block;">
+        </button>
       </div>
     </div>
 
     <!-- RIGHT: Options -->
-    <div class="card"
-      data-sku="red_sea_surf_classic"
-      data-name="Red Sea Surf Classic">
-
+    <div class="card" data-sku="red_sea_surf_classic" data-name="Red Sea Surf Classic">
       <div class="row">
         <label for="size">Size</label>
         <select id="size">
@@ -145,7 +143,6 @@
     </div>
   </section>
 </main>
-
 
   <!-- Backdrop -->
   <div class="cart-backdrop" id="cartBackdrop" hidden></div>
