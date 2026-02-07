@@ -181,7 +181,7 @@
 
   <script>
 
-    // --- Product page: Add to Bag wiring ---
+// --- Product page: Add to Cart wiring ---
 (() => {
   const addBtn = byId("addBtn");
   if (!addBtn) return;
@@ -190,29 +190,18 @@
   const sku = card?.dataset?.sku;
 
   addBtn.addEventListener("click", () => {
-    if (!window.Cart) {
-      toast("Cart failed to load");
-      return;
-    }
-    if (!sku) {
-      toast("Missing product SKU on page");
-      return;
-    }
+    if (!window.Cart) return toast("Cart failed to load");
+    if (!sku) return toast("Missing product SKU on page");
 
     const qty = Math.max(1, parseInt(byId("qty")?.value || "1", 10) || 1);
     const size = byId("size")?.value || "";
     const color = byId("color")?.value || "";
 
-    // Add base item(s)
-    window.Cart.add(sku, qty);
-
-    // If you want to preserve variants without editing cart.js,
-    // we can store them as a NOTE line item (or add metadata support later).
-    // For now, just toast it so user sees it:
-    toast(`Added: ${qty} • ${size} • ${color}`);
+    window.Cart.add(sku, qty, { size, color });
 
     updateCartIcon();
     window.dispatchEvent(new Event("gilded:cart-changed"));
+    toast(`Added: ${qty} • ${size} • ${color}`);
   });
 })();
 
