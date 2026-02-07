@@ -9,7 +9,9 @@ window.PRODUCTS = [
     priceId: "price_1SwDoyJwlrm4SccW27tvLMGy", // <-- STRIPE PRICE ID
     image: "assets/images/products/red_sea001.jpg",
     tag: "",
-    desc: "DTF tee print • bold + clean"
+    desc: "DTF tee print • bold + clean",
+    sizes: ["S","M","L","XL"],
+    colors: ["Natural","White","Soft Pink"]
   },
   {
     sku: "no27_riders_reserve",
@@ -18,6 +20,8 @@ window.PRODUCTS = [
     priceId: "price_1SwbFUJwlrm4SccWG8kHBrzh", // <-- STRIPE PRICE ID
     image: "assets/images/products/no27_001.jpg",
     tag: "Cowboy's Favorite Tee",
-    desc: "Smoke'em if you gott'em"
+    desc: "Smoke'em if you gott'em",
+    sizes: ["S","M","L","XL"],
+    colors: ["Toast","White","Natural","Forest"]
   }
 ];
