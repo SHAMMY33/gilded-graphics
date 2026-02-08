@@ -8,6 +8,7 @@ window.PRODUCTS = [
     price: 35,
     priceId: "price_1SwDoyJwlrm4SccW27tvLMGy", // <-- STRIPE PRICE ID
     image: "assets/images/products/red_sea001.jpg",
+    hoverImage: "assets/images/products/red_sea004.jpg",
     tag: "",
     desc: "DTF tee print • bold + clean",
     sizes: ["S","M","L","XL"],
