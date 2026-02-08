@@ -27,5 +27,18 @@ window.PRODUCTS = [
     sizes: ["S","M","L","XL"],
     colors: ["Toast","White","Natural","Forest"],
     url: "no27.html"
+  },
+  {
+    sku: "f150",
+    name: "F**K F150",
+    price: 30,
+    priceId: "price_1SyR5sJwlrm4SccW4XlAL5j1", // <-- STRIPE PRICE ID
+    image: "assets/images/products/f150_001.jpg",
+    hoverImage: "assets/images/products/f150_002.jpg",
+    tag: "",
+    desc: "It's a joke, but yes we sell those.",
+    sizes: ["S","M","L","XL"],
+    colors: ["White","Black"],
+    url: "f150.html"
   }
 ];
