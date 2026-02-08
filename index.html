@@ -43,6 +43,8 @@
         DTF printing, brand graphics, and merch built to stand out.
       </p>
 
+      <section class="products" id="productGrid"></section>
+      
       <div class="hero-cta">
         <a class="btn" href="order.html">Start an Order</a>
         <a class="btn ghost" href="shop.html">Browse Products</a>
@@ -53,6 +55,7 @@
         <span>Logos</span>
         <span>Flyers</span>
         <span>Merch</span>
+        <span>Patches</span>
         <span>Stickers</span>
       </div>
     </section>
@@ -71,7 +74,7 @@
         <ol>
           <li>Tell us what you’re making</li>
           <li>We design (or use yours)</li>
-          <li>We print + ship locally for free</li>
+          <li>We print + ship locally for free, ask us how!</li>
         </ol>
       </div>
     </section>
@@ -363,7 +366,10 @@
     }
 
     // Init
-    renderProducts();
+    renderProducts([
+      "f150",
+      "red_sea_surf_classic"
+    ]);
     updateCartIcon();
 
     byId("openCartBtn").addEventListener("click", openCart);
