@@ -21,9 +21,11 @@ window.PRODUCTS = [
     price: 35,
     priceId: "price_1SwbFUJwlrm4SccWG8kHBrzh", // <-- STRIPE PRICE ID
     image: "assets/images/products/no27_001.jpg",
+    hoverImage: "assets/images/products/no27_005.jpg",
     tag: "Cowboy's Favorite Tee",
     desc: "Smoke'em if you gott'em",
     sizes: ["S","M","L","XL"],
-    colors: ["Toast","White","Natural","Forest"]
+    colors: ["Toast","White","Natural","Forest"],
+    url: "no27.html"
   }
 ];
