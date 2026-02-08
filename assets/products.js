@@ -11,7 +11,8 @@ window.PRODUCTS = [
     tag: "",
     desc: "DTF tee print • bold + clean",
     sizes: ["S","M","L","XL"],
-    colors: ["Natural","White","Soft Pink"]
+    colors: ["Natural","White","Soft Pink"],
+    url: "red_sea_surf_classic.html"
   },
   {
     sku: "no27_riders_reserve",
