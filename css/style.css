@@ -461,6 +461,37 @@ button.smallbtn{cursor:pointer}
   display:block;
 }
 
+/* Product image hover swap */
+.p-img {
+  position: relative;
+  overflow: hidden;
+}
+
+.p-img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: opacity .25s ease;
+}
+
+/* Hover image hidden by default */
+.p-img .img-hover {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+}
+
+/* On hover: swap images */
+.p-card:hover .img-hover {
+  opacity: 1;
+}
+
+.p-card:hover .img-main {
+  opacity: 0;
+}
+
+
 /* Bag Add-to-Cart button (BOTTOM-RIGHT of image area) */
 .add-bag{
   position:absolute;
