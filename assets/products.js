@@ -33,8 +33,8 @@ window.PRODUCTS = [
     name: "F**K F150",
     price: 30,
     priceId: "price_1SyR5sJwlrm4SccW4XlAL5j1", // <-- STRIPE PRICE ID
-    image: "assets/images/products/f150_001.jpg",
-    hoverImage: "assets/images/products/f150_002.jpg",
+    image: "assets/images/products/f150_002.jpg",
+    hoverImage: "assets/images/products/f150_001.jpg",
     tag: "",
     desc: "It's a joke, but yes we sell those.",
     sizes: ["S","M","L","XL"],
