@@ -65,6 +65,6 @@ window.PRODUCTS = [
     desc: "The Original Graphic",
     sizes: ["S","M","L","XL"],
     colors: ["White","Black","Forest","Washed Maroon"],
-    url: "gg.html"
+    url: "GGLongSleeve.html"
   }
 ];
