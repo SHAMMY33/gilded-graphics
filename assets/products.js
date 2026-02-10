@@ -44,7 +44,7 @@ window.PRODUCTS = [
   {
     sku: "f250",
     name: "F**K F250",
-    price: 30,
+    price: 35,
     priceId: "price_1Sz9bcJwlrm4SccWVRNG6ddQ", // <-- STRIPE PRICE ID
     image: "assets/images/products/f250/f250_002.jpg",
     hoverImage: "assets/images/products/f250/f250_001.jpg",
@@ -57,7 +57,7 @@ window.PRODUCTS = [
   {
     sku: "gglongsleeve",
     name: "Gilded Graphics Long Sleeve",
-    price: 30,
+    price: 45,
     priceId: "price_1Sz9cvJwlrm4SccW7WW9Fpo1", // <-- STRIPE PRICE ID
     image: "assets/images/products/og/unisex/og_long_005.jpg",
     hoverImage: "assets/images/products/og/unisex/og_long_006.jpg",
