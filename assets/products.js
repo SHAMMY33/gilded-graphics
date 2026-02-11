@@ -48,7 +48,7 @@ window.PRODUCTS = [
     priceId: "price_1Sz9bcJwlrm4SccWVRNG6ddQ", // <-- STRIPE PRICE ID
     image: "assets/images/products/f250/f250_002.jpg",
     hoverImage: "assets/images/products/f250/f250_001.jpg",
-    tag: "",
+    tag: "Damn Good Deal",
     desc: "It's a joke, but yes we sell those.",
     sizes: ["S","M","L","XL"],
     colors: ["White","Black"],
