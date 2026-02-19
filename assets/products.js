@@ -92,5 +92,31 @@ window.PRODUCTS = [
     sizes: ["S","M","L","XL"],
     colors: ["White","Black","Forest","Washed Maroon"],
     url: "GGLongSleeve.html"
-  }
+  },
+  {
+    sku: "no_fear_mens",
+    name: "No Fear - Gym Tee",
+    price: 35,
+    priceId: "", // <-- STRIPE PRICE ID
+    image: "assets/images/products/gymtees/fear_nothing/unisex/fear_nothing_001.jpg",
+    hoverImage: "assets/images/products/gymtees/fear_nothing/unisex/fear_nothing_002.jpg",
+    tag: "",
+    desc: "Lifting Weights • Lifting Spirits",
+    sizes: ["S","M","L","XL"],
+    colors: ["Soft Pink","Black","Toast"],
+    url: "no_fear_mens.html"
+  },
+    {
+    sku: "no_fear_womens",
+    name: "No Fear - Gym Tee",
+    price: 35,
+    priceId: "", // <-- STRIPE PRICE ID
+    image: "assets/images/products/gymtees/fear_nothing/womens/fear_nothing_001.jpg",
+    hoverImage: "assets/images/products/gymtees/fear_nothing/womens/fear_nothing_002.jpg",
+    tag: "",
+    desc: "Lifting Weights • Lifting Spirits",
+    sizes: ["S","M","L","XL"],
+    colors: ["Natural","Washed Thyme","Washed Maroon"],
+    url: "no_fear_womens.html"
+  },
 ];
