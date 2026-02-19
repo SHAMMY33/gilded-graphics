@@ -7,8 +7,8 @@ window.PRODUCTS = [
     name: "Red Sea Surf Classic",
     price: 35,
     priceId: "price_1SwDoyJwlrm4SccW27tvLMGy", // <-- STRIPE PRICE ID
-    image: "assets/images/products/redsea/red_sea001.jpg",
-    hoverImage: "assets/images/products/redsea/red_sea004.jpg",
+    image: "assets/images/products/redsea/unisex/red_sea001.jpg",
+    hoverImage: "assets/images/products/redsea/unisex/red_sea004.jpg",
     tag: "",
     desc: "DTF tee print • bold + clean",
     sizes: ["S","M","L","XL"],
