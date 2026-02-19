@@ -55,6 +55,32 @@ window.PRODUCTS = [
     url: "f250.html"
   },
   {
+    sku: "og_mens",
+    name: "Gilded Graphics OG Tee",
+    price: 35,
+    priceId: "", // <-- STRIPE PRICE ID
+    image: "assets/images/products/og/unisex/og_005.jpg",
+    hoverImage: "assets/images/products/og/unisex/og_006.jpg",
+    tag: "REP THE OG",
+    desc: "The Original Graphic",
+    sizes: ["S","M","L","XL"],
+    colors: ["Toast","White","Vintage Black","Soft Pink","Natural","Forest"],
+    url: "GG_Mens.html"
+  },
+  {
+    sku: "og_womens",
+    name: "Gilded Graphics OG Tee",
+    price: 35,
+    priceId: "", // <-- STRIPE PRICE ID
+    image: "assets/images/products/og/womens/og_005.jpg",
+    hoverImage: "assets/images/products/og/womens/og_006.jpg",
+    tag: "REP THE OG",
+    desc: "The Original Graphic",
+    sizes: ["S","M","L","XL"],
+    colors: ["Vintage White","Buttermilk","Light Washed Denim","Washed Maroon","Washed Lavendar","Washed Navy","Washed Thyme"],
+    url: "GG_Womens.html"
+  },
+  {
     sku: "gglongsleeve",
     name: "Gilded Graphics Long Sleeve",
     price: 45,
